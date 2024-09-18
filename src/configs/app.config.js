@@ -9,7 +9,7 @@ const configs = {
       port: process.env.DB_PORT_DEV ?? "",
       pass: process.env.DB_PASS_DEV ?? "root",
       user: process.env.DB_USER_DEV ?? "root",
-      name: process.env.DB_NAME_DEV ?? "student_management",
+      name: process.env.DB_NAME_DEV ?? "student_management_dev",
     },
   },
   production: {
@@ -22,10 +22,11 @@ const configs = {
       port: process.env.DB_PORT_PROD ?? "",
       pass: process.env.DB_PASS_PROD ?? "root",
       user: process.env.DB_USER_PROD ?? "root",
-      name: process.env.DB_NAME_PROD ?? "student_management",
+      name: process.env.DB_NAME_PROD ?? "student_management_prod",
     },
+  }
 };
 
 const env = process.env.NODE_ENV ?? "development";
 
-module.exports = config[env];
+module.exports = configs[env];
