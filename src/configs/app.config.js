@@ -6,10 +6,11 @@ const configs = {
     },
     db: {
       host: process.env.DB_HOST_DEV ?? "",
-      port: process.env.DB_PORT_DEV ?? "",
+      port: process.env.DB_PORT_DEV ?? 3306,
       pass: process.env.DB_PASS_DEV ?? "root",
       user: process.env.DB_USER_DEV ?? "root",
       name: process.env.DB_NAME_DEV ?? "student_management_dev",
+      dialect: "mysql"
     },
   },
   production: {
@@ -19,10 +20,11 @@ const configs = {
     },
     db: {
       host: process.env.DB_HOST_PROD ?? "",
-      port: process.env.DB_PORT_PROD ?? "",
+      port: process.env.DB_PORT_PROD ?? 3306,
       pass: process.env.DB_PASS_PROD ?? "root",
       user: process.env.DB_USER_PROD ?? "root",
       name: process.env.DB_NAME_PROD ?? "student_management_prod",
+      dialect: "mysql"
     },
   }
 };
