@@ -2,7 +2,7 @@ const configs = {
   development: {
     app: {
       host: process.env.APP_HOST_DEV ?? "localhost",
-      port: process.env.APP_HOST_PROD ?? 3054,
+      port: process.env.APP_PORT_DEV ?? 3054,
     },
     db: {
       host: process.env.DB_HOST_DEV ?? "",
@@ -10,8 +10,13 @@ const configs = {
       pass: process.env.DB_PASS_DEV ?? "root",
       user: process.env.DB_USER_DEV ?? "root",
       name: process.env.DB_NAME_DEV ?? "student_management_dev",
-      dialect: "mysql"
     },
+    redis: {
+      host: process.env.REDIS_HOST_DEV ?? "",
+      port: process.env.REDIS_PORT_DEV ?? "",
+      user: process.env.REDIS_USER_DEV ?? "",
+      pass: process.env.REDIS_PASS_DEV ?? ""
+    }
   },
   production: {
     app: {
@@ -24,7 +29,6 @@ const configs = {
       pass: process.env.DB_PASS_PROD ?? "root",
       user: process.env.DB_USER_PROD ?? "root",
       name: process.env.DB_NAME_PROD ?? "student_management_prod",
-      dialect: "mysql"
     },
   }
 };
