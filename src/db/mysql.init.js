@@ -47,7 +47,8 @@ class DB {
         _this.#registerModels()
         _this.#sync()
           .then(() => logger("success", "Register and synchronize models successfully"))
-          .catch(() => logger("error", "Error while registering and synchronizing models."))
+          // .catch(() => logger("error", "Error while registering and synchronizing models."))
+          .catch((e) => logger("error", e))
       })
       .catch(err => {
         logger("error", `An error occur while authenticating database: ${err}`)
