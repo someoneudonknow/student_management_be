@@ -3,7 +3,7 @@
 const {
   db: { host, port, name, user, pass },
 } = require('../configs/app.config.js')
-const { Sequelize, Model } = require('sequelize')
+const { Sequelize } = require('sequelize')
 const fs = require("fs")
 const path = require("path")
 const { MODEL_FILE, MYSQL_INDEX, FK_CONSTRAINT } = require('../constants/regex.js')
@@ -11,6 +11,7 @@ const logger = require('../helpers/logger.js')
 
 const DB_DIALECT = 'mysql'
 const MODEL_DIR = "../models"
+const CONNECTION_TIMEOUT = 30000 // have to increase the connection timeout because wsl2 take too much time to connect to mysql
 
 class DB {
   sequelize;
@@ -27,14 +28,17 @@ class DB {
       define: {
         underscore: true,
       },
+      dialectOptions: {
+        connectTimeout: CONNECTION_TIMEOUT
+      },
       pool: {
         max: 15,
         min: 0,
         idle: 10000,
         acquire: 30000,
       },
+      logging: false
     }
-    console.log({ name, user, pass, options })
     const sequelize = new Sequelize(name, user, pass, options)
 
     sequelize
@@ -47,8 +51,7 @@ class DB {
         _this.#registerModels()
         _this.#sync()
           .then(() => logger("success", "Register and synchronize models successfully"))
-          // .catch(() => logger("error", "Error while registering and synchronizing models."))
-          .catch((e) => logger("error", e))
+          .catch((e) => logger("error", `Error while registering and synchronizing models: ${e}`))
       })
       .catch(err => {
         logger("error", `An error occur while authenticating database: ${err}`)
@@ -62,18 +65,22 @@ class DB {
     files
       .filter(file => modelFileExtRegex.test(file))
       .forEach(file => {
-        const model = require(path.join(__dirname, MODEL_DIR, file))
+        const modelDefineFunc = require(path.join(__dirname, MODEL_DIR, file))
 
-        if (!(typeof model === "function")) {
+        if (!(typeof modelDefineFunc === "function")) {
           throw new Error("Model file must be a function")
         }
 
-        this[model.name] = model(this.sequelize, this.Sequelize)
+        const model = modelDefineFunc(this.sequelize, this.Sequelize)
+
+        this[model.name] = model
       })
   }
 
   async #sync() {
     if (this.sequelize) {
+      await this.#dropOldIndexes()
+      await this.#dropOldFkConstraints()
       await this.sequelize.sync({ alter: true })
     }
   }

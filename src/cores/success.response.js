@@ -1,6 +1,6 @@
 "use strict";
 
-const { ReasonPhrases, StatusCodes } = require("../utils/httpStatusCode");
+const { ReasonPhrases, StatusCodes } = require("../constants/httpStatusCodes");
 
 class SuccessResponse {
   constructor({ message, statusCode, metadata = {} }) {

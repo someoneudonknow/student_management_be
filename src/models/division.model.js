@@ -1,9 +1,9 @@
 "use strict"
 
-const { DataTypes } = require("sequelize");
+const { DataTypes, STRING } = require("sequelize");
 
-const TABLE_NAME = "address";
-const MODEL_NAME = "Address";
+const TABLE_NAME = "divisions"
+const MODEL_NAME = "Division"
 
 module.exports = (sequelize, Sequelize) => {
   return sequelize.define(
@@ -16,19 +16,10 @@ module.exports = (sequelize, Sequelize) => {
         primaryKey: true,
         allowNull: false
       },
-      number: {
-        type: DataTypes.STRING,
-      },
-      street: {
-        type: DataTypes.STRING,
-      },
-      district: {
+      name: {
         type: DataTypes.STRING,
         allowNull: false,
-      },
-      province: {
-        type: DataTypes.STRING,
-        allowNull: false
+        unique: true
       }
     },
     {
