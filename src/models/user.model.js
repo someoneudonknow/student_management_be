@@ -24,10 +24,12 @@ module.exports = (sequelize, Sequelize) => {
       },
       email: {
         type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
         validate: {
           emailValidator: function(value) {
             if (!new RegExp(EMAIL).test(value)) {
-              throw new Error("Invalid email patern")
+              throw new Error("Invalid email pattern")
             }
           }
         }
@@ -36,54 +38,6 @@ module.exports = (sequelize, Sequelize) => {
         type: DataTypes.STRING,
         allowNull: false
       },
-      salt: {
-        type: DataTypes.STRING,
-        allowNull: false
-      },
-      first_name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      last_name: {
-        type:DataTypes.STRING,
-        allowNull: false
-      },
-      email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-      },
-      gender: {
-        type: DataTypes.ENUM("Male", "Female"),
-        allowNull: false,
-      },
-      admission_day: {
-        type: DataTypes.DATE,
-        allowNull: false,
-      },
-      birthday: {
-        type: DataTypes.DATE,
-        allowNull: false
-      },
-      class_role: {
-        type: DataTypes.ENUM("leader", "student"),
-        allowNull: false,
-        defaultValue: "student"
-      },
-      // country_id: {
-      //   type: DataTypes.UUID,
-      //   references: {
-      //     model: "address",
-      //     key: "id"
-      //   }
-      // },
-      // address_id: {
-      //   type: DataTypes.UUID,
-      //   references: {
-      //     model: "address",
-      //     key: "id"
-      //   }
-      // },
       role: {
         type: DataTypes.ENUM,
         values: ["admin", "student", "teacher"]

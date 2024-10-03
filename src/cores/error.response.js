@@ -1,7 +1,7 @@
 "use strict"
 "use strict";
 
-const { ReasonPhrases, StatusCodes } = require("../constants/httpStatusCodes/index");
+const { ReasonPhrases, StatusCodes } = require("../constants/httpStatusCodes");
 
 class ErrorResponse extends Error {
   constructor(message, statusCode) {
