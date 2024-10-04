@@ -1,10 +1,10 @@
-"use strict"
+"use strict";
 
 const { DataTypes } = require("sequelize");
 const { EMAIL } = require("../constants/regex");
 
-const TABLE_NAME = "students"
-const MODEL_NAME = "Student"
+const TABLE_NAME = "students";
+const MODEL_NAME = "Student";
 
 module.exports = (sequelize, Sequelize) => {
   return sequelize.define(
@@ -15,7 +15,7 @@ module.exports = (sequelize, Sequelize) => {
         defaultValue: DataTypes.UUIDV4,
         unique: true,
         primaryKey: true,
-        allowNull: false
+        allowNull: false,
       },
       first_name: {
         type: DataTypes.STRING,
@@ -23,19 +23,19 @@ module.exports = (sequelize, Sequelize) => {
       },
       last_name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
       email: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
         validate: {
-          emailValidator: function(value) {
+          emailValidator: function (value) {
             if (!new RegExp(EMAIL).test(value)) {
-              throw new Error("Invalid email pattern")
+              throw new Error("Invalid email pattern");
             }
-          }
-        }
+          },
+        },
       },
       gender: {
         type: DataTypes.ENUM("Male", "Female"),
@@ -47,30 +47,23 @@ module.exports = (sequelize, Sequelize) => {
       },
       birthday: {
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: false,
       },
       class_role: {
         type: DataTypes.ENUM("leader", "student"),
         allowNull: false,
-        defaultValue: "student"
+        defaultValue: "student",
       },
-      // country_id: {
-      //   type: DataTypes.UUID,
-      //   references: {
-      //     model: "address",
-      //     key: "id"
-      //   }
-      // },
-      // address_id: {
-      //   type: DataTypes.UUID,
-      //   references: {
-      //     model: "address",
-      //     key: "id"
-      //   }
-      // },
+      country: {
+        type: DataTypes.STRING,
+      },
+      address: {
+        type: DataTypes.UUID,
+        allowNull: false,
+      },
     },
     {
-      tableName: TABLE_NAME
-    }
+      tableName: TABLE_NAME,
+    },
   );
-}
+};
