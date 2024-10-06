@@ -10,6 +10,7 @@ const UserRepository = require("../models/repositories/user.repo");
 const { sendMail } = require("./mail.service");
 const verifyTemplate = require("../templates/verifyEmail.template");
 const OTPService = require("./otp.service");
+const { pickDataInfoExcept } = require("../utils");
 
 class AuthService {
   static async resetPassword({ otp, uid, newPassword }) {
@@ -78,7 +79,7 @@ class AuthService {
     await KeyTokenService.createKeyToken(updatedTokenData)
 
     return {
-      user: foundUser.toJSON(),
+      user: pickDataInfoExcept(foundUser.toJSON(), ["password"]),
       tokens: newTokenPairs
     }
   }
@@ -115,7 +116,7 @@ class AuthService {
     if (createResult !== "OK") throw new InternalServerError("Something went wrong while creating tokens")
 
     return {
-      user: foundUser,
+      user: pickDataInfoExcept(foundUser.toJSON(), ["password"]),
       tokens
     }
   }
@@ -141,7 +142,7 @@ class AuthService {
     if (createResult !== "OK") throw new InternalServerError("Something went wrong while creating tokens")
 
     return {
-      user: newUser,
+      user: pickDataInfoExcept(newUser.toJSON(), ["password"]),
       tokens
     }
   }
