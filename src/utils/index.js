@@ -28,7 +28,13 @@ const pickDataInfo = (object = {}, fields = []) => {
   return _.pick(object, fields);
 };
 
+const pickDataInfoExcept = (object, fields) => {
+  return _.omit(object, fields)
+
+}
+
 module.exports = {
+  pickDataInfoExcept,
   deepCleanObject,
   pickDataInfo
 }
