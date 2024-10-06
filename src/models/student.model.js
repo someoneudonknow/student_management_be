@@ -61,6 +61,9 @@ module.exports = (sequelize, Sequelize) => {
         type: DataTypes.UUID,
         allowNull: false,
       },
+      class: {
+        type: DataTypes.UUID,
+      },
     },
     {
       tableName: TABLE_NAME,
