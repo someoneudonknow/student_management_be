@@ -91,7 +91,7 @@ class AuthService {
   }
 
   static async login({ identifier, password }) {
-    const foundUser = await UserRepo.getUser({
+    const foundUser = await UserRepository.getUser({
       where: {
         [Op.or]: [
           { email: identifier },
@@ -120,7 +120,7 @@ class AuthService {
   }
 
   static async signUp({ email, password, userName }) {
-    const foundUser = await UserRepo.getUserByEmail(email)
+    const foundUser = await UserRepository.getUserByEmail(email)
 
     if (foundUser) {
       throw new ConflictError("Account already exists!")
@@ -128,7 +128,7 @@ class AuthService {
 
     const passwordHashed = await AuthService.getPasswordHash(password)
 
-    const newUser = await UserRepo.createUser({ email, user_name: userName, password: passwordHashed, role: "admin" })
+    const newUser = await UserRepository.createUser({ email, user_name: userName, password: passwordHashed, role: "admin" })
 
     if (!newUser) throw new InternalServerError("Something when wrong while creating user")
 
