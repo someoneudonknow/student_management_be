@@ -19,7 +19,7 @@ class AddressRepository {
   };
 
   static updateAddress = async (id, newAddress) => {
-    const oldAddress = await this.getAddress(id);
+    const oldAddress = await AddressRepository.getAddress(id);
     for (const field in newAddress) {
       oldAddress[field] = newAddress[field];
     }
