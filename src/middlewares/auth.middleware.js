@@ -29,11 +29,11 @@ const authentication = asyncHandler(async (req, _, next) => {
       req.userToken = userKeyToken;
       req.user = decodedRefreshToken;
       req.refreshToken = refreshToken;
+
+      return next();
     } catch (err) {
       throw new ForbiddenError("Token is invalid");
     }
-
-    return next();
   }
 
   try {
