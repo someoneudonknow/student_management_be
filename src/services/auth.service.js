@@ -3,7 +3,6 @@
 const bcrypt = require("bcryptjs")
 const { app: { pepper }, clientUrl } = require("../configs/app.config")
 const { ConflictError, InternalServerError, BadRequestError, AuthFailureError, ForbiddenError } = require("../cores/error.response");
-const UserRepo = require("../models/repositories/user.repo")
 const KeyTokenService = require("./keyToken.service");
 const { Op } = require("sequelize");
 const UserRepository = require("../models/repositories/user.repo");
@@ -14,8 +13,7 @@ const { pickDataInfoExcept } = require("../utils");
 
 class AuthService {
   static async resetPassword({ otp, uid, newPassword }) {
-    const foundUser = await UserRepo.getUserById(uid)
-
+    const foundUser = await UserRepository.getUserById(uid)
     if (!foundUser) throw new BadRequestError("You're not register")
 
     const isValidOTP = await OTPService.verifyOTP({ otp, userId: foundUser.id })
@@ -25,13 +23,13 @@ class AuthService {
 
     const hashedPassword = await this.getPasswordHash(newPassword)
 
-    await UserRepo.updateUserById(foundUser.id, { password: hashedPassword })
+    await UserRepository.updateUserById(foundUser.id, { password: hashedPassword })
 
     return null
   }
 
   static async forgotPassword({ email }) {
-    const foundUser = await UserRepo.getUserByEmail(email)
+    const foundUser = await UserRepository.getUserByEmail(email)
     if (!foundUser) throw new BadRequestError("You're not register")
 
     const TIMEOUT = 3;
