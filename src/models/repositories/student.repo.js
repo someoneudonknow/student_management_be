@@ -14,11 +14,13 @@ class StudentRepository {
 
   static async getStudents({ page, limit, filter }) {
     const skip = (page - 1) * limit;
-    return await DB.Student.findAndCountAll({
+    const data = await DB.Student.findAndCountAll({
       where: filter,
       limit,
       offset: skip,
     });
+
+    return { page, totalPages: Math.ceil(data.count / limit), list: data?.rows };
   }
 
   static async updateStudent(id, payload) {

@@ -1,9 +1,9 @@
-"use strict"
+"use strict";
 
 const { DataTypes } = require("sequelize");
 
-const TABLE_NAME = "subject"
-const MODEL_NAME = "Subject"
+const TABLE_NAME = "subject";
+const MODEL_NAME = "Subject";
 
 module.exports = (sequelize, Sequelize) => {
   return sequelize.define(
@@ -14,7 +14,7 @@ module.exports = (sequelize, Sequelize) => {
         defaultValue: DataTypes.UUIDV4,
         unique: true,
         primaryKey: true,
-        allowNull: false
+        allowNull: false,
       },
       name: {
         type: DataTypes.STRING,
@@ -22,7 +22,12 @@ module.exports = (sequelize, Sequelize) => {
       },
       number_of_period: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        validate: {
+          numberOfPeriodValidate: function (value) {
+            if (value < 1) throw new Error("Number of period must more than 0");
+          },
+        },
       },
       // teacher_id: {
       //     type: DataTypes.UUID,
@@ -34,7 +39,7 @@ module.exports = (sequelize, Sequelize) => {
       // }
     },
     {
-      table_name: TABLE_NAME
-    }
-  )
-} 
+      table_name: TABLE_NAME,
+    },
+  );
+};

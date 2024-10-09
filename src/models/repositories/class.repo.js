@@ -7,17 +7,25 @@ class ClassRepository {
     return await DB.Class.create(payload, options);
   };
 
+  static getClassByTeacherId = async (teacherId) => {
+    return await DB.Class.findOne({ where: { class_manager: teacherId } });
+  };
+
   static getClass = async (classId, options) => {
     return await DB.Class.findByPk(classId, options);
   };
 
   static getClasses = async ({ page = 1, limit = 10, filter }) => {
     const offset = (page - 1) * limit;
-    return await DB.Class.findAndCountAll({
+    const data = await DB.Class.findAndCountAll({
       where: filter,
       offset,
       limit,
     });
+
+    console.log(data);
+
+    return { page, totalPages: Math.ceil(data.count / limit), list: data?.rows };
   };
 
   static updateClass = async (classId, update) => {
@@ -37,6 +45,19 @@ class ClassRepository {
         id: classId,
       },
     });
+  };
+
+  static updateClassManager = async ({ teacherId, classId }) => {
+    return await DB.Class.update(
+      {
+        class_manager: `${teacherId}`,
+      },
+      {
+        where: {
+          id: classId,
+        },
+      },
+    );
   };
 }
 

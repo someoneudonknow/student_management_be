@@ -23,9 +23,14 @@ module.exports = (sequelize, Sequelize) => {
       size: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        validate: {
+          sizeValidate: function (value) {
+            if (value < 1) throw new Error("Size of class must more than 1");
+          },
+        },
       },
       grade: {
-        type: DataTypes.TINYINT,
+        type: DataTypes.ENUM("10", "11", "12"),
         allowNull: false,
       },
       class_manager: {

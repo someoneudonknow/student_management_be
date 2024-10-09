@@ -13,23 +13,19 @@ class AddressRepository {
 
   static getAddresses = async ({ page, limit, filter }) => {
     const skip = (page - 1) * limit;
-    return await DB.Address.findAndCountAll({
+    const data = await DB.Address.findAndCountAll({
       where: filter,
       limit,
       offset: skip,
     });
+
+    return { page, totalPages: Math.ceil(data.count / limit), list: data?.rows };
   };
 
   static updateAddress = async (id, newAddress) => {
     const oldAddress = await AddressRepository.getAddress(id);
 
     if (!oldAddress) throw new BadRequestError("Address not found");
-
-    const protectFields = ["id"];
-    for (const field of protectFields) {
-      delete newAddress[field];
-    }
-    const payload = deepCleanObject(newAddress);
 
     for (const field in payload) {
       oldAddress[field] = payload[field];

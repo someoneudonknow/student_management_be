@@ -1,6 +1,8 @@
 "use strict";
 
 const { DataTypes } = require("sequelize");
+const { PHONE_NUMBER, EMAIL } = require("../constants/regex");
+const dateValidate = require("../helpers/dateValidate");
 
 const TABLE_NAME = "teacher";
 const MODEL_NAME = "Teacher";
@@ -32,18 +34,46 @@ module.exports = (sequelize, Sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
+        validate: {
+          emailValidator: function (value) {
+            if (!new RegExp(EMAIL).test(value)) {
+              throw new Error("Invalid email pattern");
+            }
+          },
+        },
       },
       birthday: {
         type: DataTypes.DATE,
+        allowNull: false,
+        validate: {
+          birthdayValidate: function (value) {
+            const birthday = new Date(value);
+            const dayValidate = dateValidate(birthday, new Date(), 18, 65);
+
+            if (!dayValidate) throw new Error("Teacher age must in range [18, 65]");
+          },
+        },
       },
       phone_number: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
+        validate: {
+          phoneNumberValidation: function (value) {
+            if (!new RegExp(PHONE_NUMBER).test(value)) throw new Error("Invalid phone number");
+          },
+          phoneNumberLength: function (value) {
+            if (value.length !== 10) throw new Error("Phone number must has 10 digits");
+          },
+        },
       },
       first_day_of_work: {
         type: DataTypes.DATE,
         allowNull: false,
+      },
+      is_retired: {
+        type: DataTypes.BOOLEAN,
+        default: false,
       },
       // group_id: {
       //     type: DataTypes.UUID,

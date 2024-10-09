@@ -13,9 +13,22 @@ class TeacherService {
   };
 
   static createTeacher = async (payload) => {
-    const hasUpdateBirthday = payload.hasOwnProperty("birthday");
-    if (hasUpdateBirthday) {
-      const ageValidate = dateValidate(payload["birthday"], 18, 65);
+    const hasFirstDayOfWork = payload.hasOwnProperty("first_day_of_work");
+
+    if (hasFirstDayOfWork) {
+      const firstDayOfWordValidate = dateValidate(
+        payload["birthday"],
+        payload["first_day_of_work"],
+        18,
+        40,
+      );
+      if (!firstDayOfWordValidate) throw new BadRequestError("Invalid date");
+    }
+
+    const hasBirthday = payload.hasOwnProperty("birthday");
+
+    if (hasBirthday) {
+      const ageValidate = dateValidate(payload["birthday"], new Date(), 18, 65);
       if (!ageValidate) throw new BadRequestError("Age must be in range [18, 65]");
     }
 
@@ -25,8 +38,8 @@ class TeacherService {
   static updateTeacher = async ({ teacherId, payload }) => {
     const hasUpdateBirthday = payload.hasOwnProperty("birthday");
     if (hasUpdateBirthday) {
-      const ageValidate = dateValidate(payload["birthday"], 18, 65);
-      if (!ageValidate) throw new BadRequestError("Age must be in range [12, 15]");
+      const ageValidate = dateValidate(payload["birthday"], new Date(), 18, 65);
+      if (!ageValidate) throw new BadRequestError("Age must be in range [18, 65]");
     }
 
     const protectFields = ["id"];

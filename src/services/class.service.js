@@ -1,5 +1,7 @@
+const { BadRequestError } = require("../cores/error.response");
 const ClassRepository = require("../models/repositories/class.repo");
 const { deepCleanObject } = require("../utils");
+const TeacherService = require("./teacher.service");
 
 class ClassService {
   static getClass = async (classId) => {
@@ -14,7 +16,7 @@ class ClassService {
     return await ClassRepository.createClass(payload);
   };
 
-  static updateClass = async ({ classId, update }) => { 
+  static updateClass = async ({ classId, update }) => {
     const protectFields = ["id"];
     for (const field in protectFields) {
       delete update[field];
@@ -25,6 +27,18 @@ class ClassService {
 
   static deleteClass = async (classId) => {
     return await ClassRepository.deleteClass(classId);
+  };
+
+  static updateClassManager = async ({ teacherId, classId }) => {
+    const foundTeacher = await TeacherService.getTeacher(teacherId);
+    if (!foundTeacher) throw new BadRequestError("Teacher not found");
+
+    console.log("teacher id", teacherId)
+    const foundClass = await ClassRepository.getClassByTeacherId(teacherId);
+    console.log("found class", foundClass);
+    if (foundClass) throw new BadRequestError("Teacher had a class manager");
+
+    return await ClassRepository.updateClassManager({ teacherId, classId });
   };
 }
 

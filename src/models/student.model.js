@@ -2,6 +2,7 @@
 
 const { DataTypes } = require("sequelize");
 const { EMAIL } = require("../constants/regex");
+const dateValidate = require("../helpers/dateValidate");
 
 const TABLE_NAME = "students";
 const MODEL_NAME = "Student";
@@ -48,6 +49,14 @@ module.exports = (sequelize, Sequelize) => {
       birthday: {
         type: DataTypes.DATE,
         allowNull: false,
+        validate: {
+          birthdayValidate: function (value) {
+            const birthday = new Date(value);
+            const dayValidate = dateValidate(birthday, new Date(), 14, 20);
+
+            if (!dayValidate) throw new Error("Student age must in range [14, 20]");
+          },
+        },
       },
       class_role: {
         type: DataTypes.ENUM("leader", "student"),
