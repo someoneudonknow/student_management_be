@@ -9,11 +9,13 @@ class TeacherRepository {
 
   static getTeachers = async ({ page = 1, limit = 10, filter = {} }) => {
     const offset = (page - 1) * limit;
-    return await DB.Teacher.findAndCountAll({
+    const data = await DB.Teacher.findAndCountAll({
       where: filter,
       offset,
       limit,
     });
+
+    return { page, totalPages: Math.ceil(data.count / limit), list: data?.rows };
   };
 
   static createTeacher = async (payload, options) => {

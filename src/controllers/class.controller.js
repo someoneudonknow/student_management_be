@@ -36,6 +36,16 @@ class ClassController {
       metadata: await ClassService.deleteClass(req.params.classId),
     }).send(res);
   };
+
+  static updateClassManager = async (req, res, next) => {
+    return new SuccessResponse({
+      message: "Update class manager success",
+      metadata: await ClassService.updateClassManager({
+        teacherId: req.params.teacherId,
+        classId: req.params.classId,
+      }),
+    }).send(res);
+  };
 }
 
 module.exports = ClassController;

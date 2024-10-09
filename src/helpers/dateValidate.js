@@ -1,14 +1,14 @@
-const dateValidate = (birthday, minAge, maxAge) => {
-  const today = new Date();
-  const birthDay = new Date(birthday);
+const dateValidate = (compareDay, root, min, max) => {
+  const mileStone = new Date(root);
+  const dayConvert = new Date(compareDay);
 
-  let year = today.getFullYear() - birthDay.getFullYear();
-  const month = today.getMonth() - birthDay.getMonth();
-  const day = today.getDate() - birthDay.getDate();
+  let year = mileStone.getFullYear() - dayConvert.getFullYear();
+  const month = mileStone.getMonth() - dayConvert.getMonth();
+  const day = mileStone.getDate() - dayConvert.getDate();
 
   if (month < 0 || (month === 0 && day < 0)) year--;
 
-  return year >= minAge && year <= maxAge;
+  return year >= min && year <= max;
 };
 
 module.exports = dateValidate;
