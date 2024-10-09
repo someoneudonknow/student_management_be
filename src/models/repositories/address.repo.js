@@ -1,4 +1,6 @@
+const { BadRequestError } = require("../../cores/error.response");
 const DB = require("../../db/mysql.init");
+const { deepCleanObject } = require("../../utils");
 
 class AddressRepository {
   static createAddress = async (payload, options) => {
@@ -20,8 +22,17 @@ class AddressRepository {
 
   static updateAddress = async (id, newAddress) => {
     const oldAddress = await AddressRepository.getAddress(id);
-    for (const field in newAddress) {
-      oldAddress[field] = newAddress[field];
+
+    if (!oldAddress) throw new BadRequestError("Address not found");
+
+    const protectFields = ["id"];
+    for (const field of protectFields) {
+      delete newAddress[field];
+    }
+    const payload = deepCleanObject(newAddress);
+
+    for (const field in payload) {
+      oldAddress[field] = payload[field];
     }
     return await oldAddress.save();
   };

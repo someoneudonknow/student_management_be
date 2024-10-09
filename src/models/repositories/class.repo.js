@@ -1,4 +1,6 @@
+const { BadRequestError } = require("../../cores/error.response");
 const DB = require("../../db/mysql.init");
+const { deepCleanObject } = require("../../utils");
 
 class ClassRepository {
   static createClass = async (payload, options = {}) => {
@@ -9,7 +11,7 @@ class ClassRepository {
     return await DB.Class.findByPk(classId, options);
   };
 
-  static getAllClasses = async ({ page = 1, limit = 10, filter }) => {
+  static getClasses = async ({ page = 1, limit = 10, filter }) => {
     const offset = (page - 1) * limit;
     return await DB.Class.findAndCountAll({
       where: filter,
@@ -20,6 +22,9 @@ class ClassRepository {
 
   static updateClass = async (classId, update) => {
     const foundClass = await ClassRepository.getClass(classId);
+
+    if (!foundClass) throw new BadRequestError("Class not found");
+
     for (const field in update) {
       foundClass[field] = update[field];
     }

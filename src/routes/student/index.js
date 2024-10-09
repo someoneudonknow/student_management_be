@@ -8,6 +8,7 @@ const StudentController = require("../../controllers/student.controller");
 const routes = express.Router();
 
 routes.use(authentication);
+routes.get("/search", asyncHandler(StudentController.search));
 routes.post("/", asyncHandler(StudentController.createStudent));
 routes.get("/:studentId", asyncHandler(StudentController.getStudent));
 routes.get("/", asyncHandler(StudentController.getAllStudents));

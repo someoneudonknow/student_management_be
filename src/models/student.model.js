@@ -67,6 +67,13 @@ module.exports = (sequelize, Sequelize) => {
     },
     {
       tableName: TABLE_NAME,
+      indexes: [
+        {
+          type: "FULLTEXT",
+          name: "idx_search",
+          fields: ["first_name", "last_name"],
+        },
+      ],
     },
   );
 };

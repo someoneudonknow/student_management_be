@@ -1,9 +1,9 @@
-"use strict"
+"use strict";
 
 const { DataTypes } = require("sequelize");
 
-const TABLE_NAME = "teacher"
-const MODEL_NAME = "Teacher"
+const TABLE_NAME = "teacher";
+const MODEL_NAME = "Teacher";
 
 module.exports = (sequelize, Sequelize) => {
   return sequelize.define(
@@ -14,7 +14,7 @@ module.exports = (sequelize, Sequelize) => {
         defaultValue: DataTypes.UUIDV4,
         unique: true,
         primaryKey: true,
-        allowNull: false
+        allowNull: false,
       },
       first_name: {
         type: DataTypes.STRING,
@@ -22,7 +22,7 @@ module.exports = (sequelize, Sequelize) => {
       },
       last_name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
       gender: {
         type: DataTypes.ENUM("Male", "Female"),
@@ -31,25 +31,19 @@ module.exports = (sequelize, Sequelize) => {
       email: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: true,
       },
       birthday: {
-        type: DataTypes.DATE
+        type: DataTypes.DATE,
       },
       phone_number: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: true,
       },
       first_day_of_work: {
         type: DataTypes.DATE,
         allowNull: false,
-      },
-      teacher_id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-        allowNull: false,
-        unique: true
       },
       // group_id: {
       //     type: DataTypes.UUID,
@@ -61,7 +55,7 @@ module.exports = (sequelize, Sequelize) => {
       // }
     },
     {
-      table_name: TABLE_NAME
-    }
-  )
-}
+      table_name: TABLE_NAME,
+    },
+  );
+};
