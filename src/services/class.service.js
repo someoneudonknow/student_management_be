@@ -6,15 +6,15 @@ class ClassService {
     return await ClassRepository.getClass(classId);
   };
 
-  static getAllClasses = async ({ page, limit }) => {
-    return await ClassRepository.getAllClasses({ page, limit });
+  static getClasses = async ({ page, limit, ...rest }) => {
+    return await ClassRepository.getClasses({ page, limit, filter: rest });
   };
 
   static createClass = async (payload) => {
     return await ClassRepository.createClass(payload);
   };
 
-  static updateClass = async ({ classId, update }) => {
+  static updateClass = async ({ classId, update }) => { 
     const protectFields = ["id"];
     for (const field in protectFields) {
       delete update[field];

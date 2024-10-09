@@ -19,7 +19,7 @@ class ClassController {
   static getClasses = async (req, res, next) => {
     return new SuccessResponse({
       message: "Get classes success",
-      metadata: await ClassService.getAllClasses(req?.query),
+      metadata: await ClassService.getClasses(req?.query),
     }).send(res);
   };
 

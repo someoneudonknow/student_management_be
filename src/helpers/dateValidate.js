@@ -2,7 +2,7 @@ const dateValidate = (birthday, minAge, maxAge) => {
   const today = new Date();
   const birthDay = new Date(birthday);
 
-  const year = today.getFullYear() - birthDay.getFullYear();
+  let year = today.getFullYear() - birthDay.getFullYear();
   const month = today.getMonth() - birthDay.getMonth();
   const day = today.getDate() - birthDay.getDate();
 

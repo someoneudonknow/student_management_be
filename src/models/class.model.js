@@ -1,9 +1,9 @@
-"use strict"
+"use strict";
 
-const { DataTypes } = require("sequelize")
+const { DataTypes } = require("sequelize");
 
-const TABLE_NAME = "class"
-const MODEL_NAME = "Class"
+const TABLE_NAME = "class";
+const MODEL_NAME = "Class";
 
 module.exports = (sequelize, Sequelize) => {
   return sequelize.define(
@@ -14,30 +14,25 @@ module.exports = (sequelize, Sequelize) => {
         defaultValue: DataTypes.UUIDV4,
         unique: true,
         primaryKey: true,
-        allowNull: false
+        allowNull: false,
       },
       name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
       },
       size: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
       },
       grade: {
         type: DataTypes.TINYINT,
         allowNull: false,
       },
-      // class_manager: {
-      //     type: DataTypes.UUID,
-      //     allowNull: false,
-      //     unique: true,
-      //     reference: {
-      //         model: "teacher",
-      //         key: "id"
-      //     }
-      // }
+      class_manager: {
+        type: DataTypes.UUID,
+        unique: true,
+      },
     },
-    { table_name: TABLE_NAME }
-  )
-}
+    { table_name: TABLE_NAME },
+  );
+};

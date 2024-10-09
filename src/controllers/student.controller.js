@@ -37,6 +37,13 @@ class StudentController {
       metadata: await StudentService.deleteStudent(req.params.studentId),
     }).send(res);
   };
+
+  static search = async (req, res, next) => {
+    return new SuccessResponse({
+      message: "Search success",
+      metadata: await StudentService.search(req?.query),
+    }).send(res);
+  };
 }
 
 module.exports = StudentController;

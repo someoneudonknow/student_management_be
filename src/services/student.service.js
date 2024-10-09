@@ -35,7 +35,7 @@ class StudentService {
       address: newStudentAddress.id,
     };
 
-    //CHange range of age from rule
+    //Change range of age from rule
     const ageValidate = dateValidate(birthday, 12, 15);
     if (!ageValidate) throw new BadRequestError("Age must be in range [12, 15]");
 
@@ -71,6 +71,11 @@ class StudentService {
 
   static deleteStudent = async (id) => {
     return await StudentRepository.deleteStudent(id);
+  };
+
+  static search = async ({ text }) => {
+    if (text.trim() === "") return [];
+    return await StudentRepository.search({ page, limit, payload: text });
   };
 }
 
