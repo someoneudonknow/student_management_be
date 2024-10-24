@@ -27,9 +27,10 @@ class AddressRepository {
 
     if (!oldAddress) throw new BadRequestError("Address not found");
 
-    for (const field in payload) {
-      oldAddress[field] = payload[field];
+    for (const field in newAddress) {
+      oldAddress[field] = newAddress[field];
     }
+
     return await oldAddress.save();
   };
 
