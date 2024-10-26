@@ -5,6 +5,6 @@ const { app: { port } } = require("./configs/app.config")
 const logger = require("./helpers/logger")
 
 const server = app.listen(port, () => {
-  logger("info", `Start listening on::${port}`)
+  logger("info", `Start listening on ${port} in ${process.env.NODE_ENV} environment`)
 })
 

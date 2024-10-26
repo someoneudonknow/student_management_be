@@ -18,10 +18,13 @@ class ClassService {
 
   static updateClass = async ({ classId, update }) => {
     const protectFields = ["id"];
+
     for (const field in protectFields) {
       delete update[field];
     }
+
     const payload = deepCleanObject(update);
+
     return await ClassRepository.updateClass(classId, payload);
   };
 
@@ -33,9 +36,8 @@ class ClassService {
     const foundTeacher = await TeacherService.getTeacher(teacherId);
     if (!foundTeacher) throw new BadRequestError("Teacher not found");
 
-    console.log("teacher id", teacherId)
     const foundClass = await ClassRepository.getClassByTeacherId(teacherId);
-    console.log("found class", foundClass);
+
     if (foundClass) throw new BadRequestError("Teacher had a class manager");
 
     return await ClassRepository.updateClassManager({ teacherId, classId });

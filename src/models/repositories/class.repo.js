@@ -1,6 +1,5 @@
 const { BadRequestError } = require("../../cores/error.response");
 const DB = require("../../db/mysql.init");
-const { deepCleanObject } = require("../../utils");
 
 class ClassRepository {
   static createClass = async (payload, options = {}) => {

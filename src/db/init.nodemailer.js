@@ -20,7 +20,7 @@ const transport = nodemailer.createTransport({
 
 transport.verify(function(error, success) {
   if (error) {
-    logger("error", `Error while verify email: ${err}`);
+    logger("error", `Error while verify email: ${error}`);
   } else {
     logger("success", "Mail server is ready to take your message")
   }
