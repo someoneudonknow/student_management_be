@@ -2,7 +2,7 @@
 
 const { DataTypes } = require("sequelize");
 
-const TABLE_NAME = "class";
+const TABLE_NAME = "classes";
 const MODEL_NAME = "Class";
 
 module.exports = (sequelize, Sequelize) => {
@@ -24,7 +24,7 @@ module.exports = (sequelize, Sequelize) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
-          sizeValidate: function (value) {
+          sizeValidate: function(value) {
             if (value < 1) throw new Error("Size of class must more than 1");
           },
         },

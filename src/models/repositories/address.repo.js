@@ -1,5 +1,6 @@
 const { BadRequestError } = require("../../cores/error.response");
 const DB = require("../../db/mysql.init");
+const { InternalServerError } = require("../../cores/error.response.js");
 const { deepCleanObject } = require("../../utils");
 
 class AddressRepository {
@@ -7,8 +8,8 @@ class AddressRepository {
     return await DB.Address.create(payload, options);
   };
 
-  static getAddress = async (id, options) => {
-    return await DB.Address.findByPK(id, options);
+  static getAddress = async (id, options = {}) => {
+    return await DB.Address.findByPk(id, options);
   };
 
   static getAddresses = async ({ page, limit, filter }) => {
@@ -22,9 +23,28 @@ class AddressRepository {
     return { page, totalPages: Math.ceil(data.count / limit), list: data?.rows };
   };
 
-  static updateAddress = async (id, newAddress) => {
+  static updateOrCreate = async (id, address) => {
     const oldAddress = await AddressRepository.getAddress(id);
 
+    if (oldAddress) {
+      for (const field in address) {
+        oldAddress[field] = address[field];
+      }
+
+      const updated = await oldAddress.save();
+      if (!updated) throw new InternalServerError("Something went wrong");
+
+      return updated;
+    } else {
+      const createdAddress = await AddressRepository.createAddress(address);
+      if (!createdAddress) throw new InternalServerError("Something went wrong");
+
+      return createdAddress;
+    }
+  };
+
+  static updateAddress = async (id, newAddress) => {
+    const oldAddress = await AddressRepository.getAddress(id);
     if (!oldAddress) throw new BadRequestError("Address not found");
 
     for (const field in newAddress) {

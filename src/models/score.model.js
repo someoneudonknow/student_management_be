@@ -2,7 +2,7 @@
 
 const { DataTypes, DATEONLY, FLOAT } = require("sequelize");
 
-const TABLE_NAME = "score";
+const TABLE_NAME = "scores";
 const MODEL_NAME = "Score";
 
 module.exports = (sequelize, Sequelize) => {
@@ -31,7 +31,7 @@ module.exports = (sequelize, Sequelize) => {
       quarter_point_1: {
         type: DataTypes.FLOAT,
         validate: {
-          pointValidate: function (value) {
+          pointValidate: function(value) {
             if (value < 0 || value > 10) throw new Error("Point must in range [0, 10]");
           },
         },
@@ -39,7 +39,7 @@ module.exports = (sequelize, Sequelize) => {
       quarter_point_2: {
         type: DataTypes.FLOAT,
         validate: {
-          pointValidate: function (value) {
+          pointValidate: function(value) {
             if (value < 0 || value > 10) throw new Error("Point must in range [0, 10]");
           },
         },
@@ -47,7 +47,7 @@ module.exports = (sequelize, Sequelize) => {
       period_point: {
         type: DataTypes.FLOAT,
         validate: {
-          pointValidate: function (value) {
+          pointValidate: function(value) {
             if (value < 0 || value > 10) throw new Error("Point must in range [0, 10]");
           },
         },
@@ -55,7 +55,7 @@ module.exports = (sequelize, Sequelize) => {
       final_exam_point: {
         type: DataTypes.FLOAT,
         validate: {
-          pointValidate: function (value) {
+          pointValidate: function(value) {
             if (value < 0 || value > 10) throw new Error("Point must in range [0, 10]");
           },
         },
@@ -63,7 +63,7 @@ module.exports = (sequelize, Sequelize) => {
       AVG_point: {
         type: DataTypes.FLOAT,
         validate: {
-          pointValidate: function (value) {
+          pointValidate: function(value) {
             if (value < 0 || value > 10) throw new Error("Point must in range [0, 10]");
           },
         },

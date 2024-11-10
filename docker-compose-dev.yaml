@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  mysql-1:
+    container_name: mysql-1
+    image: mysql:latest
+    env_file:
+      - ./.env
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASS_DEV}
+
+  redis-1:
+    container_name: redis-1
+    image: redis:latest
+
+  backend:
+    build: .
+    env_file:
+      - ./.env
+    ports:
+      - ${APP_PORT_DEV}:${APP_PORT_DEV}
+    volumes:
+      - uploads:/app/src/uploads
+      - /app/node_modules
+      - G:\codes\my_projects\student_management\backend:/app
+    depends_on:
+      - mysql-1
+      - redis-1
+volumes:
+  uploads:

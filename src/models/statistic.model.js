@@ -2,7 +2,7 @@
 
 const { DataTypes } = require("sequelize");
 
-const TABLE_NAME = "statistic";
+const TABLE_NAME = "statistics";
 const MODEL_NAME = "Statistic";
 
 module.exports = (sequelize, Sequelize) => {
@@ -31,7 +31,7 @@ module.exports = (sequelize, Sequelize) => {
       pass_rate: {
         type: DataTypes.FLOAT,
         validate: {
-          passRateValidate: function (value) {
+          passRateValidate: function(value) {
             if (value < 0 || value > 100) throw new Error("Pass rate must in range [0, 100]");
           },
         },

@@ -2,7 +2,7 @@
 
 const { DataTypes } = require("sequelize");
 
-const TABLE_NAME = "rule";
+const TABLE_NAME = "rules";
 const MODEL_NAME = "Rule";
 
 module.exports = (sequelize, Sequelize) => {

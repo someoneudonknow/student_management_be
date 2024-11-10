@@ -4,7 +4,7 @@ const { DataTypes } = require("sequelize");
 const { PHONE_NUMBER, EMAIL } = require("../constants/regex");
 const dateValidate = require("../helpers/dateValidate");
 
-const TABLE_NAME = "teacher";
+const TABLE_NAME = "teachers";
 const MODEL_NAME = "Teacher";
 
 module.exports = (sequelize, Sequelize) => {
@@ -35,7 +35,7 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
         unique: true,
         validate: {
-          emailValidator: function (value) {
+          emailValidator: function(value) {
             if (!new RegExp(EMAIL).test(value)) {
               throw new Error("Invalid email pattern");
             }
@@ -46,7 +46,7 @@ module.exports = (sequelize, Sequelize) => {
         type: DataTypes.DATE,
         allowNull: false,
         validate: {
-          birthdayValidate: function (value) {
+          birthdayValidate: function(value) {
             const birthday = new Date(value);
             const dayValidate = dateValidate(birthday, new Date(), 18, 65);
 
@@ -59,10 +59,10 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
         unique: true,
         validate: {
-          phoneNumberValidation: function (value) {
+          phoneNumberValidation: function(value) {
             if (!new RegExp(PHONE_NUMBER).test(value)) throw new Error("Invalid phone number");
           },
-          phoneNumberLength: function (value) {
+          phoneNumberLength: function(value) {
             if (value.length !== 10) throw new Error("Phone number must has 10 digits");
           },
         },
