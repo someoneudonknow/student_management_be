@@ -3,14 +3,35 @@ services:
   mysql-1:
     container_name: mysql-1
     image: mysql:latest
+    restart: always
     env_file:
       - ./.env
     environment:
       - MYSQL_ROOT_PASSWORD=${DB_PASS_DEV}
+    ports:
+      - ${DB_PORT_DEV}:${DB_PORT_DEV}
+    volumes:
+      - mysql-data:/var/lib/mysql
 
   redis-1:
+    image: redis/redis-stack-server:latest
     container_name: redis-1
-    image: redis:latest
+    restart: always
+    volumes:
+      - redis-data:/data
+    env_file:
+      - ./.env
+    ports:
+      - ${REDIS_PORT_DEV}:${REDIS_PORT_DEV}
+
+  redis_insight-1:
+    image: redislabs/redisinsight:1.14.0
+    container_name: redis_insight-1
+    restart: always
+    ports:
+      - 8001:8001
+    volumes:
+      - redis_insight_volume_data:/db
 
   backend:
     build: .
@@ -22,8 +43,13 @@ services:
       - uploads:/app/src/uploads
       - /app/node_modules
       - G:\codes\my_projects\student_management\backend:/app
+    tty: true
+    stdin_open: true
     depends_on:
       - mysql-1
       - redis-1
 volumes:
   uploads:
+  mysql-data:
+  redis-data:
+  redis_insight_volume_data:
