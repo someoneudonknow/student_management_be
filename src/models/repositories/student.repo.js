@@ -1,4 +1,4 @@
-const { QueryTypes } = require("sequelize");
+const { QueryTypes, Sequelize, Op, where, col, BelongsTo } = require("sequelize");
 const { BadRequestError } = require("../../cores/error.response");
 const DB = require("../../db/mysql.init");
 const { deepCleanObject } = require("../../utils");
@@ -12,15 +12,48 @@ class StudentRepository {
     return await DB.Student.findByPk(id, options);
   }
 
-  static async getStudents({ page, limit, filter }) {
-    const skip = (page - 1) * limit;
+  static async getStudents({ page, limit, filter = {} }) {
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+
     const data = await DB.Student.findAndCountAll({
       where: filter,
-      limit,
+      limit: limitNum,
       offset: skip,
     });
 
-    return { page, totalPages: Math.ceil(data.count / limit), list: data?.rows };
+    return { page: pageNum, totalPages: Math.ceil(data.count / limit), list: data?.rows };
+  }
+
+  static async getStudentsWithAddresses({ page, limit }) {
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    const data = await DB.Student.findAndCountAll({
+      order: [["createdAt", "DESC"]],
+      attributes: {
+        exclude: ["address", "createdAt", "updatedAt"],
+      },
+      include: [
+        {
+          model: DB.Address,
+          as: "address",
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          association: new BelongsTo(DB.Student, DB.Address, {
+            targetKey: "id",
+            foreignKey: "address",
+          }),
+        },
+      ],
+      limit: limitNum,
+      offset: skip,
+    });
+
+    return { page: pageNum, totalPages: Math.ceil(data.count / limit), list: data?.rows };
   }
 
   static async updateStudent(id, payload) {
@@ -30,14 +63,19 @@ class StudentRepository {
     for (const field in payload) {
       foundStudent[field] = payload[field];
     }
+
     return await foundStudent.save();
   }
 
   static async deleteStudent(id) {
     return await DB.Student.destroy({ where: { id } });
   }
+
+  static async deleteWithFilter(filter) {
+    return await DB.Student.destroy(filter);
+  }
+
   static async search({ payload = "" }) {
-    //minimum 4 character for full text search
     const queryStr = `SELECT * FROM students s 
       WHERE MATCH(s.first_name, s.last_name) AGAINST (:payload)
       ORDER BY s.first_name, s.last_name ASC LIMIT :limit OFFSET :offset `;

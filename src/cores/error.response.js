@@ -1,4 +1,3 @@
-"use strict"
 "use strict";
 
 const { ReasonPhrases, StatusCodes } = require("../constants/httpStatusCodes");
@@ -11,46 +10,31 @@ class ErrorResponse extends Error {
 }
 
 class ConflictError extends ErrorResponse {
-  constructor(
-    message = ReasonPhrases.CONFLICT,
-    statusCode = StatusCodes.CONFLICT
-  ) {
+  constructor(message = ReasonPhrases.CONFLICT, statusCode = StatusCodes.CONFLICT) {
     super(message, statusCode);
   }
 }
 
 class NotFoundError extends ErrorResponse {
-  constructor(
-    message = ReasonPhrases.NOT_FOUND,
-    statusCode = StatusCodes.NOT_FOUND
-  ) {
+  constructor(message = ReasonPhrases.NOT_FOUND, statusCode = StatusCodes.NOT_FOUND) {
     super(message, statusCode);
   }
 }
 
 class BadRequestError extends ErrorResponse {
-  constructor(
-    message = ReasonPhrases.BAD_REQUEST,
-    statusCode = StatusCodes.BAD_REQUEST
-  ) {
+  constructor(message = ReasonPhrases.BAD_REQUEST, statusCode = StatusCodes.BAD_REQUEST) {
     super(message, statusCode);
   }
 }
 
 class AuthFailureError extends ErrorResponse {
-  constructor(
-    message = ReasonPhrases.UNAUTHORIZED,
-    statusCode = StatusCodes.UNAUTHORIZED
-  ) {
+  constructor(message = ReasonPhrases.UNAUTHORIZED, statusCode = StatusCodes.UNAUTHORIZED) {
     super(message, statusCode);
   }
 }
 
 class ForbiddenError extends ErrorResponse {
-  constructor(
-    message = ReasonPhrases.FORBIDDEN,
-    statusCode = StatusCodes.FORBIDDEN
-  ) {
+  constructor(message = ReasonPhrases.FORBIDDEN, statusCode = StatusCodes.FORBIDDEN) {
     super(message, statusCode);
   }
 }
@@ -58,7 +42,7 @@ class ForbiddenError extends ErrorResponse {
 class InternalServerError extends ErrorResponse {
   constructor(
     message = ReasonPhrases.INTERNAL_SERVER_ERROR,
-    statusCode = StatusCodes.INTERNAL_SERVER_ERROR
+    statusCode = StatusCodes.INTERNAL_SERVER_ERROR,
   ) {
     super(message, statusCode);
   }
@@ -67,7 +51,7 @@ class InternalServerError extends ErrorResponse {
 class InsufficientStorageError extends ErrorResponse {
   constructor(
     message = ReasonPhrases.INSUFFICIENT_STORAGE,
-    statusCode = StatusCodes.INSUFFICIENT_STORAGE
+    statusCode = StatusCodes.INSUFFICIENT_STORAGE,
   ) {
     super(message, statusCode);
   }
@@ -76,7 +60,7 @@ class InsufficientStorageError extends ErrorResponse {
 class RedisError extends ErrorResponse {
   constructor(
     message = ReasonPhrases.INTERNAL_SERVER_ERROR,
-    statusCode = StatusCodes.INTERNAL_SERVER_ERROR
+    statusCode = StatusCodes.INTERNAL_SERVER_ERROR,
   ) {
     super(message, statusCode);
   }
@@ -90,7 +74,5 @@ module.exports = {
   AuthFailureError,
   ForbiddenError,
   InternalServerError,
-  RedisError
+  RedisError,
 };
-
-

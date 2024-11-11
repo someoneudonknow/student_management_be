@@ -2,7 +2,7 @@
 
 const { DataTypes } = require("sequelize");
 
-const TABLE_NAME = "subject";
+const TABLE_NAME = "subjects";
 const MODEL_NAME = "Subject";
 
 module.exports = (sequelize, Sequelize) => {
@@ -24,7 +24,7 @@ module.exports = (sequelize, Sequelize) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
-          numberOfPeriodValidate: function (value) {
+          numberOfPeriodValidate: function(value) {
             if (value < 1) throw new Error("Number of period must more than 0");
           },
         },

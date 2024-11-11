@@ -9,7 +9,7 @@ require("dotenv").config()
 const app = express();
 const env = process.env.NODE_ENV
 
-if (env === "development") {
+if (env !== "production") {
   app.use(morgan("dev"))
 } else {
   app.use(morgan("tiny"))
