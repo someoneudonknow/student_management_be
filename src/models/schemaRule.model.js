@@ -3,7 +3,7 @@
 const { DataTypes } = require("sequelize");
 const { CLASS_MODEL_ID, STU_MODEL_ID } = require("../constants/schemaId");
 
-const TABLE_NAME = "schema_rule";
+const TABLE_NAME = "schema_rules";
 const MODEL_NAME = "SchemaRule";
 
 module.exports = (sequelize, Sequelize) => {

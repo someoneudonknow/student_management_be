@@ -2,7 +2,7 @@
 
 const { DataTypes } = require("sequelize");
 
-const TABLE_NAME = "protector";
+const TABLE_NAME = "protectors";
 const MODEL_NAME = "Protector";
 
 module.exports = (sequelize, Sequelize) => {
@@ -29,10 +29,10 @@ module.exports = (sequelize, Sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          phoneNumberValidation: function (value) {
+          phoneNumberValidation: function(value) {
             if (!new RegExp(PHONE_NUMBER).test(value)) throw new Error("Invalid phone number");
           },
-          phoneNumberLength: function (value) {
+          phoneNumberLength: function(value) {
             if (value.length !== 10) throw new Error("Phone number must has 10 digits");
           },
         },

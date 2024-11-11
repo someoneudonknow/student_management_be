@@ -1,8 +1,8 @@
-"use strict"
+"use strict";
 
 const { DataTypes } = require("sequelize");
 
-const TABLE_NAME = "address";
+const TABLE_NAME = "addresses";
 const MODEL_NAME = "Address";
 
 module.exports = (sequelize, Sequelize) => {
@@ -14,7 +14,7 @@ module.exports = (sequelize, Sequelize) => {
         defaultValue: DataTypes.UUIDV4,
         unique: true,
         primaryKey: true,
-        allowNull: false
+        allowNull: false,
       },
       number: {
         type: DataTypes.STRING,
@@ -26,13 +26,17 @@ module.exports = (sequelize, Sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      ward: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       province: {
         type: DataTypes.STRING,
-        allowNull: false
-      }
+        allowNull: false,
+      },
     },
     {
-      table_name: TABLE_NAME
-    }
-  )
-}
+      table_name: TABLE_NAME,
+    },
+  );
+};

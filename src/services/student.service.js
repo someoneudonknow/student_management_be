@@ -1,8 +1,9 @@
 const StudentRepository = require("../models/repositories/student.repo");
 const AddressRepository = require("../models/repositories/address.repo");
 const { InternalServerError, BadRequestError } = require("../cores/error.response");
-const { deepCleanObject } = require("../utils");
+const { deepCleanObject, pickDataInfoExcept } = require("../utils");
 const dateValidate = require("../helpers/dateValidate");
+const { Op } = require("sequelize");
 
 const classRoles = {
   STUDENT: "student",
@@ -35,10 +36,6 @@ class StudentService {
       address: newStudentAddress.id,
     };
 
-    //Change range of age from rule
-    const ageValidate = dateValidate(birthday, 12, 15);
-    if (!ageValidate) throw new BadRequestError("Age must be in range [12, 15]");
-
     const newStudent = await StudentRepository.createStudent(studentPayload);
     if (!newStudent) throw new InternalServerError("Something went wrong");
 
@@ -50,27 +47,60 @@ class StudentService {
   };
 
   static getAllStudents = async ({ page = 1, limit = 10 }) => {
-    return await StudentRepository.getStudents({ page, limit });
+    return await StudentRepository.getStudentsWithAddresses({ page, limit });
   };
 
   static updateStudent = async ({ id, update }) => {
-    const hasUpdateBirthday = update.hasOwnProperty("birthday");
-    if (hasUpdateBirthday) {
-      const ageValidate = dateValidate(update["birthday"], 12, 15);
-      if (!ageValidate) throw new BadRequestError("Age must be in range [12, 15]");
+    const foundStudent = await StudentRepository.getStudent(id);
+    if (!foundStudent) throw new BadRequestError("Student not found");
+
+    const address = update?.address;
+    let updatedOrNewAddress = null;
+
+    if (address) {
+      const addressData = pickDataInfoExcept(address, ["id"]);
+      const cleanedAddressUpdateData = deepCleanObject(addressData);
+
+      const updatedAddress = await AddressRepository.updateOrCreate(
+        address.id,
+        cleanedAddressUpdateData,
+      );
+
+      updatedOrNewAddress = updatedAddress.toJSON();
     }
 
-    const protectFields = ["id"];
-    for (const field of protectFields) {
-      delete update[field];
-    }
-    const payload = deepCleanObject(update);
+    const studentData = pickDataInfoExcept(update, ["address", "id"]);
+    const cleanedStudentUpdateData = deepCleanObject(studentData);
 
-    return await StudentRepository.updateStudent(id, payload);
+    if (updatedOrNewAddress && !foundStudent.toJSON()?.address) {
+      cleanedStudentUpdateData.address = updatedOrNewAddress.id;
+    }
+
+    const updatedStudent = await StudentRepository.updateStudent(id, cleanedStudentUpdateData);
+    if (!updatedStudent) throw new InternalServerError("Something went wrong while updating");
+
+    return {
+      ...pickDataInfoExcept(updatedStudent.toJSON(), ["address"]),
+      Address: pickDataInfoExcept(updatedOrNewAddress, ["createdAt", "updatedAt"]),
+    };
   };
 
   static deleteStudent = async (id) => {
     return await StudentRepository.deleteStudent(id);
+  };
+
+  static batchDeleteStudents = async (ids) => {
+    console.log({ ids });
+
+    // const deletedResult = await StudentRepository.deleteWithFilter({
+    //   where: {
+    //     id: {
+    //       [Op.in]: ids,
+    //     },
+    //   },
+    // });
+
+    return null;
   };
 
   static search = async ({ text }) => {
