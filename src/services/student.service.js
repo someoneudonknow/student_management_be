@@ -90,17 +90,17 @@ class StudentService {
   };
 
   static batchDeleteStudents = async (ids) => {
-    console.log({ ids });
+    if (ids.length > 100) throw new BadRequestError("Delete limit exceeded");
 
-    // const deletedResult = await StudentRepository.deleteWithFilter({
-    //   where: {
-    //     id: {
-    //       [Op.in]: ids,
-    //     },
-    //   },
-    // });
+    const deletedResult = await StudentRepository.deleteWithFilter({
+      where: {
+        id: {
+          [Op.in]: ids,
+        },
+      },
+    });
 
-    return null;
+    return deletedResult;
   };
 
   static search = async ({ text }) => {

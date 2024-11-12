@@ -1,6 +1,6 @@
-"use strict"
+"use strict";
 
-const _ = require("lodash")
+const _ = require("lodash");
 
 const deepCleanObject = (object) => {
   if (typeof object !== "object") return object;
@@ -22,19 +22,31 @@ const deepCleanObject = (object) => {
   });
 
   return object;
-}
+};
 
 const pickDataInfo = (object = {}, fields = []) => {
   return _.pick(object, fields);
 };
 
 const pickDataInfoExcept = (object, fields) => {
-  return _.omit(object, fields)
+  return _.omit(object, fields);
+};
 
-}
+const getMatchedRegex = (str, regex) => {
+  const matches = [];
+  const spliter = new RegExp(regex, "gm");
+  let match;
+
+  while ((match = spliter.exec(str))) {
+    matches.push(match[1]);
+  }
+
+  return matches;
+};
 
 module.exports = {
   pickDataInfoExcept,
   deepCleanObject,
-  pickDataInfo
-}
+  pickDataInfo,
+  getMatchedRegex,
+};
