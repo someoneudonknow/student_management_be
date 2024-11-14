@@ -1,9 +1,8 @@
 const StudentRepository = require("../models/repositories/student.repo");
 const AddressRepository = require("../models/repositories/address.repo");
+const ClassRepository = require("../models/repositories/class.repo");
 const { InternalServerError, BadRequestError } = require("../cores/error.response");
 const { deepCleanObject, pickDataInfoExcept } = require("../utils");
-const dateValidate = require("../helpers/dateValidate");
-const { Op } = require("sequelize");
 
 const classRoles = {
   STUDENT: "student",
@@ -86,6 +85,10 @@ class StudentService {
   };
 
   static deleteStudent = async (id) => {
+    const foundStudent = await StudentRepository.getStudent(id)
+
+    if(!foundStudent) throw new BadRequestError("Student not found")
+      
     return await StudentRepository.deleteStudent(id);
   };
 
@@ -107,6 +110,18 @@ class StudentService {
     if (text.trim() === "") return [];
     return await StudentRepository.search({ page, limit, payload: text });
   };
+
+  static updateStudentClass = async ({userIds, classId}) => {
+    const foundStudents = await StudentRepository.getStudentsByIds(userIds);
+
+    if(!foundStudents || foundStudents.length !== userIds.length) throw new BadRequestError("Students not found");
+
+    const foundClass = await ClassRepository.getClass(classId)
+
+    if(!foundClass) throw new BadRequestError("Class not found")
+
+      return await StudentRepository.updateStudentClass({userIds, classId})
+  }
 }
 
 module.exports = StudentService;
