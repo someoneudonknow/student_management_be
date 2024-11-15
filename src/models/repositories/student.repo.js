@@ -1,7 +1,5 @@
 const { QueryTypes, Sequelize, Op, where, col, BelongsTo } = require("sequelize");
-const { BadRequestError } = require("../../cores/error.response");
 const DB = require("../../db/mysql.init");
-const { deepCleanObject } = require("../../utils");
 
 class StudentRepository {
   static async createStudent(payload, options) {
@@ -79,9 +77,48 @@ class StudentRepository {
     return { page: pageNum, totalPages: Math.ceil(data.count / limit), list: data?.rows };
   }
 
+  static async getStudentsByIds(idxs) {
+    return await DB.Student.findAll({
+      where: {
+        id: {
+          [Op.or]: idxs,
+        },
+      },
+    });
+  }
+
+  static async getStudentsWithAddresses({ page, limit }) {
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    const data = await DB.Student.findAndCountAll({
+      order: [["createdAt", "DESC"]],
+      attributes: {
+        exclude: ["address", "createdAt", "updatedAt"],
+      },
+      include: [
+        {
+          model: DB.Address,
+          as: "address",
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          association: new BelongsTo(DB.Student, DB.Address, {
+            targetKey: "id",
+            foreignKey: "address",
+          }),
+        },
+      ],
+      limit: limitNum,
+      offset: skip,
+    });
+
+    return { page: pageNum, totalPages: Math.ceil(data.count / limit), list: data?.rows };
+  }
+
   static async updateStudent(id, payload) {
     const foundStudent = await StudentRepository.getStudent(id);
-    if (!foundStudent) throw new BadRequestError("Student not found");
 
     for (const field in payload) {
       foundStudent[field] = payload[field];
@@ -103,12 +140,30 @@ class StudentRepository {
       WHERE MATCH(s.first_name, s.last_name) AGAINST (:payload)
       ORDER BY s.first_name, s.last_name ASC LIMIT :limit`;
 
-    const foundStudents = await DB.sequelize.query(queryStr, {
+    const foundStudent = await DB.sequelize.query(queryStr, {
       type: QueryTypes.SELECT,
       replacements: { payload: `${payload}`, limit: 10 },
     });
 
-    return foundStudents;
+    return foundStudent;
+  }
+
+  static async updateStudentClass({ userIds, classId }) {
+    const [affectedCount, affectedRows] = await DB.Student.update(
+      { class: classId },
+      {
+        where: {
+          id: {
+            [Op.in]: userIds,
+          },
+        },
+      },
+    );
+
+    return {
+      affectedCount,
+      affectedRows,
+    };
   }
 }
 

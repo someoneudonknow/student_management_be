@@ -58,6 +58,13 @@ class StudentController {
       metadata: await StudentService.search(req?.query),
     }).send(res);
   };
+
+  static updateStudentClass = async (req, res, next) => {
+    return new SuccessResponse({
+      message: "Update student class success",
+      metadata: await StudentService.updateStudentClass({userIds: req.body.userIds, classId: req.body.classId})
+    }).send(res)
+  }
 }
 
 module.exports = StudentController;
