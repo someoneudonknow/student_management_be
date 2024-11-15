@@ -2,6 +2,13 @@ const { SuccessResponse } = require("../cores/success.response");
 const StudentService = require("../services/student.service");
 
 class StudentController {
+  static filterStudents = async (req, res, next) => {
+    return new SuccessResponse({
+      message: "Filter students successfully",
+      metadata: await StudentService.filterStudents(req.originalUrl.split("?")[1]),
+    }).send(res);
+  };
+
   static batchDeleteStudents = async (req, res, next) => {
     return new SuccessResponse({
       message: "Delete students successully",

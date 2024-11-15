@@ -3,6 +3,9 @@ const AddressRepository = require("../models/repositories/address.repo");
 const ClassRepository = require("../models/repositories/class.repo");
 const { InternalServerError, BadRequestError } = require("../cores/error.response");
 const { deepCleanObject, pickDataInfoExcept } = require("../utils");
+const sequelize = require("sequelize");
+const { Op } = require("sequelize");
+const parseOData = require("odata-sequelize");
 
 const classRoles = {
   STUDENT: "student",
@@ -45,6 +48,14 @@ class StudentService {
     return await StudentRepository.getStudent(id);
   };
 
+  static filterStudents = async (plainQuery) => {
+    if (!plainQuery) return await this.getAllStudents({ page: 1, limit: 50 });
+
+    const filterObj = parseOData(decodeURIComponent(plainQuery), sequelize);
+
+    return await StudentRepository.getStudentWithAddressesAndFilter(filterObj);
+  };
+
   static getAllStudents = async ({ page = 1, limit = 10 }) => {
     return await StudentRepository.getStudentsWithAddresses({ page, limit });
   };
@@ -85,10 +96,10 @@ class StudentService {
   };
 
   static deleteStudent = async (id) => {
-    const foundStudent = await StudentRepository.getStudent(id)
+    const foundStudent = await StudentRepository.getStudent(id);
 
-    if(!foundStudent) throw new BadRequestError("Student not found")
-      
+    if (!foundStudent) throw new BadRequestError("Student not found");
+
     return await StudentRepository.deleteStudent(id);
   };
 
@@ -108,20 +119,21 @@ class StudentService {
 
   static search = async ({ text }) => {
     if (text.trim() === "") return [];
-    return await StudentRepository.search({ page, limit, payload: text });
+    return await StudentRepository.search({ payload: text });
   };
 
-  static updateStudentClass = async ({userIds, classId}) => {
+  static updateStudentClass = async ({ userIds, classId }) => {
     const foundStudents = await StudentRepository.getStudentsByIds(userIds);
 
-    if(!foundStudents || foundStudents.length !== userIds.length) throw new BadRequestError("Students not found");
+    if (!foundStudents || foundStudents.length !== userIds.length)
+      throw new BadRequestError("Students not found");
 
-    const foundClass = await ClassRepository.getClass(classId)
+    const foundClass = await ClassRepository.getClass(classId);
 
-    if(!foundClass) throw new BadRequestError("Class not found")
+    if (!foundClass) throw new BadRequestError("Class not found");
 
-      return await StudentRepository.updateStudentClass({userIds, classId})
-  }
+    return await StudentRepository.updateStudentClass({ userIds, classId });
+  };
 }
 
 module.exports = StudentService;

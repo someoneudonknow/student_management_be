@@ -12,6 +12,7 @@ routes.use(authentication);
 routes.use(restrictTo(["admin"]));
 routes.get("/search", asyncHandler(StudentController.search));
 routes.post("/", asyncHandler(StudentController.createStudent));
+routes.get("/filter", asyncHandler(StudentController.filterStudents));
 routes.get("/:studentId", asyncHandler(StudentController.getStudent));
 routes.get("/", asyncHandler(StudentController.getAllStudents));
 routes.delete("/:studentId", asyncHandler(StudentController.deleteStudent));
