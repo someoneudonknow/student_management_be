@@ -26,6 +26,29 @@ class StudentRepository {
     return { page: pageNum, totalPages: Math.ceil(data.count / limit), list: data?.rows };
   }
 
+  static async getStudentWithAddressesAndFilter(filters) {
+    if (!filters.limit) filters.limit = 10;
+
+    const data = await DB.Student.findAndCountAll({
+      include: [
+        {
+          model: DB.Address,
+          as: "address",
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          association: new BelongsTo(DB.Student, DB.Address, {
+            targetKey: "id",
+            foreignKey: "address",
+          }),
+        },
+      ],
+      ...filters,
+    });
+
+    return { count: data.count, list: data?.rows };
+  }
+
   static async getStudentsWithAddresses({ page, limit }) {
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
@@ -78,13 +101,14 @@ class StudentRepository {
   static async search({ payload = "" }) {
     const queryStr = `SELECT * FROM students s 
       WHERE MATCH(s.first_name, s.last_name) AGAINST (:payload)
-      ORDER BY s.first_name, s.last_name ASC LIMIT :limit OFFSET :offset `;
+      ORDER BY s.first_name, s.last_name ASC LIMIT :limit`;
 
-    const foundStudent = await DB.sequelize.query(queryStr, {
+    const foundStudents = await DB.sequelize.query(queryStr, {
       type: QueryTypes.SELECT,
       replacements: { payload: `${payload}`, limit: 10 },
     });
-    return foundStudent;
+
+    return foundStudents;
   }
 }
 

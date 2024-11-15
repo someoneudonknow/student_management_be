@@ -2,8 +2,9 @@ const StudentRepository = require("../models/repositories/student.repo");
 const AddressRepository = require("../models/repositories/address.repo");
 const { InternalServerError, BadRequestError } = require("../cores/error.response");
 const { deepCleanObject, pickDataInfoExcept } = require("../utils");
-const dateValidate = require("../helpers/dateValidate");
+var sequelize = require("sequelize");
 const { Op } = require("sequelize");
+const parseOData = require("odata-sequelize");
 
 const classRoles = {
   STUDENT: "student",
@@ -44,6 +45,14 @@ class StudentService {
 
   static getStudent = async (id) => {
     return await StudentRepository.getStudent(id);
+  };
+
+  static filterStudents = async (plainQuery) => {
+    if (!plainQuery) return await this.getAllStudents({ page: 1, limit: 50 });
+
+    const filterObj = parseOData(decodeURIComponent(plainQuery), sequelize);
+
+    return await StudentRepository.getStudentWithAddressesAndFilter(filterObj);
   };
 
   static getAllStudents = async ({ page = 1, limit = 10 }) => {
@@ -105,7 +114,7 @@ class StudentService {
 
   static search = async ({ text }) => {
     if (text.trim() === "") return [];
-    return await StudentRepository.search({ page, limit, payload: text });
+    return await StudentRepository.search({ payload: text });
   };
 }
 
