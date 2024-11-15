@@ -1,6 +1,6 @@
 "use strict";
 
-const { DataTypes, DATEONLY, FLOAT } = require("sequelize");
+const { DataTypes } = require("sequelize");
 
 const TABLE_NAME = "scores";
 const MODEL_NAME = "Score";
@@ -68,22 +68,22 @@ module.exports = (sequelize, Sequelize) => {
           },
         },
       },
-      // student_id: {
-      //   type: DataTypes.UUID,
-      //   allowNull: false,
-      //   references: {
-      //     model: "user",
-      //     key: "id"
-      //   }
-      // },
-      // subject_id: {
-      //   type: DataTypes.UUID,
-      //   allowNull: false,
-      //   references: {
-      //     model: "subject",
-      //     key: "id"
-      //   }
-      // }
+      student_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        // references: {
+        //   model: "user",
+        //   key: "id"
+        // }
+      },
+      subject_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        // references: {
+        //   model: "subject",
+        //   key: "id"
+        // }
+      }
     },
     {
       table_name: TABLE_NAME,
