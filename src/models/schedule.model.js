@@ -23,42 +23,42 @@ module.exports = (sequelize, Sequelize) => {
           model: "classes",
           key: "id",
         },
-      },
-      day: {
-        type: DataTypes.ENUM(
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-          "Sunday",
-        ),
-        allowNull: false,
-      },
-      section_order: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      subject: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        references: {
-          model: "subjects",
-          key: "id",
+        day: {
+          type: DataTypes.ENUM(
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+          ),
+          allowNull: false,
         },
-      },
-      teacher: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        references: {
-          model: "teachers",
-          key: "id",
+        section_order: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+        },
+        subject: {
+          type: DataTypes.UUID,
+          allowNull: false,
+          references: {
+            model: "subjects",
+            key: "id",
+          },
+        },
+        teacher: {
+          type: DataTypes.UUID,
+          allowNull: false,
+          references: {
+            model: "teachers",
+            key: "id",
+          },
         },
       },
     },
     {
-      tableName: TABLE_NAME,
+      table_name: TABLE_NAME,
     },
   );
 };
