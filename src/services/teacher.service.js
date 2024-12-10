@@ -2,6 +2,7 @@ const TeacherRepository = require("../models/repositories/teacher.repo");
 const { deepCleanObject } = require("../utils");
 const dateValidate = require("../helpers/dateValidate");
 const { BadRequestError } = require("../cores/error.response");
+const { Op } = require("sequelize");
 
 class TeacherService {
   static getTeacher = async (teacherId) => {
@@ -9,7 +10,7 @@ class TeacherService {
   };
 
   static getTeachers = async ({ page, limit }) => {
-    return await TeacherRepository.getTeachers({ page, limit });
+    return await TeacherRepository.getAllTeachers({ page, limit });
   };
 
   static createTeacher = async (payload) => {
@@ -37,6 +38,7 @@ class TeacherService {
 
   static updateTeacher = async ({ teacherId, payload }) => {
     const hasUpdateBirthday = payload.hasOwnProperty("birthday");
+
     if (hasUpdateBirthday) {
       const ageValidate = dateValidate(payload["birthday"], new Date(), 18, 65);
       if (!ageValidate) throw new BadRequestError("Age must be in range [18, 65]");
@@ -54,6 +56,22 @@ class TeacherService {
   static deleteTeacher = async (teacherId) => {
     return await TeacherRepository.deleteTeacher(teacherId);
   };
+
+  static batchDeleteTeachers = async (ids) => {
+    if (ids.length > 100) throw new BadRequestError("Delete limit exceeded");
+
+    const deletedResult = await TeacherRepository.deleteWithFilter({
+      where: {
+        id: {
+          [Op.in]: ids,
+        },
+      },
+    });
+
+    return deletedResult;
+  };
+
+  static filterTeachers = async ({ query }) => { };
 }
 
 module.exports = TeacherService;

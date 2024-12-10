@@ -8,13 +8,15 @@ services:
       - ./.env
     environment:
       - MYSQL_ROOT_PASSWORD=${DB_PASS_DEV}
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
     ports:
-      - ${DB_PORT_DEV}:${DB_PORT_DEV}
+      - 3307:${DB_PORT_DEV}
     volumes:
       - mysql-data:/var/lib/mysql
 
   redis-1:
-    image: redis/redis-stack-server:latest
+    image: redis
     container_name: redis-1
     restart: always
     volumes:

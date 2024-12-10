@@ -8,7 +8,8 @@ class TeacherRepository {
   };
 
   static getTeachers = async ({ page = 1, limit = 10, filter = {} }) => {
-    const offset = (page - 1) * limit;
+    const offset = (pageNum - 1) * limitNum;
+
     const data = await DB.Teacher.findAndCountAll({
       where: filter,
       offset,
@@ -18,9 +19,26 @@ class TeacherRepository {
     return { page, totalPages: Math.ceil(data.count / limit), list: data?.rows };
   };
 
+  static getAllTeachers = async ({ page = 1, limit = 10 }) => {
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const offset = (pageNum - 1) * limitNum;
+
+    const data = await DB.Teacher.findAndCountAll({
+      offset,
+      limit: limitNum,
+    });
+
+    return { page: pageNum, totalPages: Math.ceil(data.count / limit), list: data?.rows };
+  };
+
   static createTeacher = async (payload, options) => {
     return await DB.Teacher.create(payload, options);
   };
+
+  static async deleteWithFilter(filter) {
+    return await DB.Teacher.destroy(filter);
+  }
 
   static updateTeacher = async (teacherId, payload) => {
     const foundTeacher = await TeacherRepository.getTeacher(teacherId);

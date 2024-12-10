@@ -29,10 +29,10 @@ module.exports = (sequelize, Sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          phoneNumberValidation: function(value) {
+          phoneNumberValidation: function (value) {
             if (!new RegExp(PHONE_NUMBER).test(value)) throw new Error("Invalid phone number");
           },
-          phoneNumberLength: function(value) {
+          phoneNumberLength: function (value) {
             if (value.length !== 10) throw new Error("Phone number must has 10 digits");
           },
         },
@@ -40,14 +40,6 @@ module.exports = (sequelize, Sequelize) => {
       role: {
         type: DataTypes.STRING,
       },
-      // student_id: {
-      //     type: DataTypes.UUID,
-      //     allowNull: false,
-      //     references: {
-      //         model: "user",
-      //         key: "id"
-      //     }
-      // }
     },
     {
       table_name: TABLE_NAME,

@@ -24,22 +24,14 @@ module.exports = (sequelize, Sequelize) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
-          numberOfPeriodValidate: function(value) {
+          numberOfPeriodValidate: function (value) {
             if (value < 1) throw new Error("Number of period must more than 0");
           },
         },
       },
-      // teacher_id: {
-      //     type: DataTypes.UUID,
-      //     allowNull: false,
-      //     references: {
-      //         model: "teacher",
-      //         key: "id"
-      //     }
-      // }
     },
     {
-      table_name: TABLE_NAME,
+      tableName: TABLE_NAME,
     },
   );
 };

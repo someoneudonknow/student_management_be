@@ -106,6 +106,12 @@ class StudentService {
   static batchDeleteStudents = async (ids) => {
     if (ids.length > 100) throw new BadRequestError("Delete limit exceeded");
 
+    const foundStudents = await StudentRepository.getStudentsByIds(ids);
+
+    await Promise.all(
+      foundStudents.map(async (st) => st.address && AddressRepository.deleteAddress(st.address)),
+    );
+
     const deletedResult = await StudentRepository.deleteWithFilter({
       where: {
         id: {

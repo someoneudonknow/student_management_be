@@ -41,7 +41,7 @@ module.exports = (sequelize, Sequelize) => {
       },
     },
     {
-      table_name: TABLE_NAME,
+      tableName: TABLE_NAME,
     },
   );
 };

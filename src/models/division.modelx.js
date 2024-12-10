@@ -1,9 +1,9 @@
-"use strict"
+"use strict";
 
 const { DataTypes, STRING } = require("sequelize");
 
-const TABLE_NAME = "divisions"
-const MODEL_NAME = "Division"
+const TABLE_NAME = "divisions";
+const MODEL_NAME = "Division";
 
 module.exports = (sequelize, Sequelize) => {
   return sequelize.define(
@@ -14,16 +14,16 @@ module.exports = (sequelize, Sequelize) => {
         defaultValue: DataTypes.UUIDV4,
         unique: true,
         primaryKey: true,
-        allowNull: false
+        allowNull: false,
       },
       name: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
-      }
+        unique: true,
+      },
     },
     {
-      table_name: TABLE_NAME
-    }
-  )
-}
+      tableName: TABLE_NAME,
+    },
+  );
+};

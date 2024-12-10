@@ -61,6 +61,10 @@ class AddressRepository {
       },
     });
   };
+
+  static deleteWithFilter = async (filter) => {
+    return await DB.Address.destroy(filter);
+  };
 }
 
 module.exports = AddressRepository;

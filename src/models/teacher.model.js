@@ -35,7 +35,7 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
         unique: true,
         validate: {
-          emailValidator: function(value) {
+          emailValidator: function (value) {
             if (!new RegExp(EMAIL).test(value)) {
               throw new Error("Invalid email pattern");
             }
@@ -46,7 +46,7 @@ module.exports = (sequelize, Sequelize) => {
         type: DataTypes.DATE,
         allowNull: false,
         validate: {
-          birthdayValidate: function(value) {
+          birthdayValidate: function (value) {
             const birthday = new Date(value);
             const dayValidate = dateValidate(birthday, new Date(), 18, 65);
 
@@ -59,10 +59,10 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
         unique: true,
         validate: {
-          phoneNumberValidation: function(value) {
+          phoneNumberValidation: function (value) {
             if (!new RegExp(PHONE_NUMBER).test(value)) throw new Error("Invalid phone number");
           },
-          phoneNumberLength: function(value) {
+          phoneNumberLength: function (value) {
             if (value.length !== 10) throw new Error("Phone number must has 10 digits");
           },
         },
@@ -75,17 +75,16 @@ module.exports = (sequelize, Sequelize) => {
         type: DataTypes.BOOLEAN,
         default: false,
       },
-      // group_id: {
-      //     type: DataTypes.UUID,
-      //     allowNull: false,
-      //     references: {
-      //         model: "group",
-      //         key: "id"
-      //     }
-      // }
+      subject: {
+        type: DataTypes.UUID,
+        references: {
+          model: "subjects",
+          key: "id",
+        },
+      },
     },
     {
-      table_name: TABLE_NAME,
+      tableName: TABLE_NAME,
     },
   );
 };

@@ -16,11 +16,12 @@ module.exports = (sequelize, Sequelize) => {
         primaryKey: true,
         allowNull: false,
       },
-      schema_rule_id: {
-        unique: true,
-        type: DataTypes.STRING,
-        allowNull: false,
-        index: true,
+      schema_rule: {
+        type: DataTypes.UUID,
+        references: {
+          model: "schema_rules",
+          key: "id",
+        },
       },
       field: {
         type: DataTypes.STRING,
@@ -29,19 +30,19 @@ module.exports = (sequelize, Sequelize) => {
       field_type: {
         type: DataTypes.ENUM("NUMBER", "STRING", "BOOLEAN", "DECIMAL"),
         allowNull: false,
-        default: "STRING"
+        default: "STRING",
       },
       operator: {
         type: DataTypes.ENUM("=", "!=", ">", "<", ">=", "<="),
-        allowNull: false
+        allowNull: false,
       },
       compare_value: {
         type: DataTypes.STRING,
-        allowNull: false
-      }
+        allowNull: false,
+      },
     },
     {
-      table_name: TABLE_NAME,
+      tableName: TABLE_NAME,
     },
   );
 };

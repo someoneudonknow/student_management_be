@@ -1,8 +1,17 @@
-'use strict'
+"use strict";
 
-const bcrypt = require("bcryptjs")
-const { app: { pepper }, clientUrl } = require("../configs/app.config")
-const { ConflictError, InternalServerError, BadRequestError, AuthFailureError, ForbiddenError } = require("../cores/error.response");
+const bcrypt = require("bcryptjs");
+const {
+  app: { pepper },
+  clientUrl,
+} = require("../configs/app.config");
+const {
+  ConflictError,
+  InternalServerError,
+  BadRequestError,
+  AuthFailureError,
+  ForbiddenError,
+} = require("../cores/error.response");
 const KeyTokenService = require("./keyToken.service");
 const { Op } = require("sequelize");
 const UserRepository = require("../models/repositories/user.repo");
@@ -13,144 +22,183 @@ const { pickDataInfoExcept } = require("../utils");
 
 class AuthService {
   static async resetPassword({ otp, uid, newPassword }) {
-    const foundUser = await UserRepository.getUserById(uid)
-    if (!foundUser) throw new BadRequestError("You're not register")
+    const foundUser = await UserRepository.getUserById(uid);
+    if (!foundUser) throw new BadRequestError("You're not register");
 
-    const isValidOTP = await OTPService.verifyOTP({ otp, userId: foundUser.id })
-    if (!isValidOTP) throw new BadRequestError("You're otp is expired or invalid")
+    const isValidOTP = await OTPService.verifyOTP({ otp, userId: foundUser.id });
+    if (!isValidOTP) throw new BadRequestError("You're otp is expired or invalid");
 
-    if (!newPassword) throw new BadRequestError("Invalid password")
+    if (!newPassword) throw new BadRequestError("Invalid password");
 
-    const hashedPassword = await this.getPasswordHash(newPassword)
+    const hashedPassword = await this.getPasswordHash(newPassword);
 
-    await UserRepository.updateUserById(foundUser.id, { password: hashedPassword })
+    await UserRepository.updateUserById(foundUser.id, { password: hashedPassword });
 
-    return null
+    return null;
   }
 
   static async forgotPassword({ email }) {
-    const foundUser = await UserRepository.getUserByEmail(email)
-    if (!foundUser) throw new BadRequestError("You're not register")
+    const foundUser = await UserRepository.getUserByEmail(email);
+    if (!foundUser) throw new BadRequestError("You're not register");
 
     const TIMEOUT = 3;
 
-    const createdOTP = await OTPService.createOTP({ userId: foundUser.id, timeoutInMinutes: TIMEOUT })
+    const createdOTP = await OTPService.createOTP({
+      userId: foundUser.id,
+      timeoutInMinutes: TIMEOUT,
+    });
 
     await sendMail({
       from: "Tran Tu <nguyentu550278@gmail.com",
       to: email,
       subject: "This is your verification email, please don't share this to anyone",
-      html: verifyTemplate({ expirationTime: TIMEOUT, verifyLink: `${clientUrl}/reset-password?otp=${createdOTP}&uid=${foundUser.id}` })
-    })
+      html: verifyTemplate({
+        expirationTime: TIMEOUT,
+        verifyLink: `${clientUrl}/reset-password?otp=${createdOTP}&uid=${foundUser.id}`,
+      }),
+    });
 
     return null;
   }
 
   static async refreshAToken({ user, refreshToken, userToken }) {
-    if (!refreshToken) throw new BadRequestError("Please provide a refresh token")
+    if (!refreshToken) throw new BadRequestError("Please provide a refresh token");
 
-    const { id, user_email } = user
-    const { publicKey, refreshToken: { token }, refreshTokenUsed, privateKey } = userToken
+    const { id, user_email } = user;
+    const {
+      publicKey,
+      refreshToken: { token },
+      refreshTokenUsed,
+      privateKey,
+    } = userToken;
 
-    if (refreshTokenUsed.findIndex(rft => rft === refreshToken) !== -1) {
-      await KeyTokenService.deleteToken({ userId: id })
+    if (refreshTokenUsed.findIndex((rft) => rft === refreshToken) !== -1) {
+      await KeyTokenService.deleteToken({ userId: id });
 
-      throw new ForbiddenError("There're some suspicious behavior of your account! please log in again")
+      throw new ForbiddenError(
+        "There're some suspicious behavior of your account! please log in again",
+      );
     }
 
     if (token !== refreshToken) {
-      throw new AuthFailureError("You're not register")
+      throw new AuthFailureError("You're not register");
     }
 
-    const foundUser = await UserRepository.getUserByEmail(user_email)
-    if (!foundUser) throw new AuthFailureError("You're not register")
+    const foundUser = await UserRepository.getUserByEmail(user_email);
+    if (!foundUser) throw new AuthFailureError("You're not register");
 
-    const newTokenPairs = await KeyTokenService.createTokenPair({ payload: { id: foundUser.id, user_email: foundUser.email, user_name: foundUser.user_name }, publicKey, privateKey })
+    const newTokenPairs = await KeyTokenService.createTokenPair({
+      payload: { id: foundUser.id, user_email: foundUser.email, user_name: foundUser.user_name },
+      publicKey,
+      privateKey,
+    });
 
     const updatedTokenData = {
       ...userToken,
       userId: id,
       refreshTokenUsed: [...refreshTokenUsed, refreshToken],
-      refreshToken: newTokenPairs.refreshToken
-    }
+      refreshToken: newTokenPairs.refreshToken,
+    };
 
-    await KeyTokenService.createKeyToken(updatedTokenData)
+    await KeyTokenService.createKeyToken(updatedTokenData);
 
     return {
       user: pickDataInfoExcept(foundUser.toJSON(), ["password"]),
-      tokens: newTokenPairs
-    }
+      tokens: newTokenPairs,
+    };
   }
 
   static async logout({ userId }) {
-    const result = await KeyTokenService.deleteToken({ userId: userId })
+    const result = await KeyTokenService.deleteToken({ userId: userId });
 
-    if (result !== 1) throw new AuthFailureError("Could not logout")
+    if (result !== 1) throw new AuthFailureError("Could not logout");
 
-    return null
+    return null;
   }
 
   static async login({ identifier, password }) {
     const foundUser = await UserRepository.getUser({
       where: {
-        [Op.or]: [
-          { email: identifier },
-          { user_name: identifier },
-        ]
-      }
-    })
+        [Op.or]: [{ email: identifier }, { user_name: identifier }],
+      },
+    });
 
-    if (!foundUser) throw new BadRequestError("Account not found")
+    if (!foundUser) throw new BadRequestError("Account not found");
 
-    const isPassCorrect = await bcrypt.compare(password, foundUser.password)
+    const isPassCorrect = await bcrypt.compare(password, foundUser.password);
 
-    if (!isPassCorrect) throw new AuthFailureError("Wrong password or user name")
+    if (!isPassCorrect) throw new AuthFailureError("Wrong password or user name");
 
-    const { id, email: user_email, user_name } = foundUser
-    const { privateKey, publicKey } = await KeyTokenService.createKeyPairs()
-    const tokens = await KeyTokenService.createTokenPair({ payload: { id, user_email, user_name }, publicKey, privateKey })
-    const createResult = await KeyTokenService.createKeyToken({ userId: id, publicKey, refreshToken: tokens.refreshToken, privateKey })
+    const { id, email: user_email, user_name } = foundUser;
+    const { privateKey, publicKey } = await KeyTokenService.createKeyPairs();
+    const tokens = await KeyTokenService.createTokenPair({
+      payload: { id, user_email, user_name },
+      publicKey,
+      privateKey,
+    });
+    const createResult = await KeyTokenService.createKeyToken({
+      userId: id,
+      publicKey,
+      refreshToken: tokens.refreshToken,
+      privateKey,
+    });
 
-    if (createResult !== "OK") throw new InternalServerError("Something went wrong while creating tokens")
+    if (createResult !== "OK")
+      throw new InternalServerError("Something went wrong while creating tokens");
 
     return {
       user: pickDataInfoExcept(foundUser.toJSON(), ["password"]),
-      tokens
-    }
+      tokens,
+    };
   }
 
   static async signUp({ email, password, userName }) {
-    const foundUser = await UserRepository.getUserByEmail(email)
+    const foundUser = await UserRepository.getUserByEmail(email);
 
     if (foundUser) {
-      throw new ConflictError("Account already exists!")
+      throw new ConflictError("Account already exists!");
     }
 
-    const passwordHashed = await AuthService.getPasswordHash(password)
+    const passwordHashed = await AuthService.getPasswordHash(password);
 
-    const newUser = await UserRepository.createUser({ email, user_name: userName, password: passwordHashed, role: "admin" })
+    const newUser = await UserRepository.createUser({
+      email,
+      user_name: userName,
+      password: passwordHashed,
+      role: "admin",
+    });
 
-    if (!newUser) throw new InternalServerError("Something when wrong while creating user")
+    if (!newUser) throw new InternalServerError("Something when wrong while creating user");
 
-    const { id, email: user_email, user_name } = newUser
-    const { privateKey, publicKey } = await KeyTokenService.createKeyPairs()
-    const tokens = await KeyTokenService.createTokenPair({ payload: { id, user_email, user_name }, publicKey, privateKey })
-    const createResult = await KeyTokenService.createKeyToken({ userId: id, publicKey, refreshToken: tokens.refreshToken, privateKey })
+    const { id, email: user_email, user_name } = newUser;
+    const { privateKey, publicKey } = await KeyTokenService.createKeyPairs();
+    const tokens = await KeyTokenService.createTokenPair({
+      payload: { id, user_email, user_name },
+      publicKey,
+      privateKey,
+    });
+    const createResult = await KeyTokenService.createKeyToken({
+      userId: id,
+      publicKey,
+      refreshToken: tokens.refreshToken,
+      privateKey,
+    });
 
-    if (createResult !== "OK") throw new InternalServerError("Something went wrong while creating tokens")
+    if (createResult !== "OK")
+      throw new InternalServerError("Something went wrong while creating tokens");
 
     return {
       user: pickDataInfoExcept(newUser.toJSON(), ["password"]),
-      tokens
-    }
+      tokens,
+    };
   }
 
   static async getPasswordHash(password) {
-    const saltRound = 10
-    const salt = await bcrypt.genSalt(saltRound)
-    const passwordHashed = await bcrypt.hash(password, salt + pepper)
+    const saltRound = 10;
+    const salt = await bcrypt.genSalt(saltRound);
+    const passwordHashed = await bcrypt.hash(password, salt + pepper);
 
-    return passwordHashed
+    return passwordHashed;
   }
 }
 

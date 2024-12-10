@@ -24,7 +24,7 @@ module.exports = (sequelize, Sequelize) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
-          sizeValidate: function(value) {
+          sizeValidate: function (value) {
             if (value < 1) throw new Error("Size of class must more than 1");
           },
         },
@@ -38,6 +38,6 @@ module.exports = (sequelize, Sequelize) => {
         unique: true,
       },
     },
-    { table_name: TABLE_NAME },
+    { tableName: TABLE_NAME },
   );
 };

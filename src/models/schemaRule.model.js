@@ -27,14 +27,14 @@ module.exports = (sequelize, Sequelize) => {
         type: DataTypes.ENUM,
         allowNull: false,
         index: true,
-        values: [CLASS_MODEL_ID, STU_MODEL_ID]
+        values: [CLASS_MODEL_ID, STU_MODEL_ID],
       },
       description: {
         type: DataTypes.TEXT,
       },
     },
     {
-      table_name: TABLE_NAME,
+      tableName: TABLE_NAME,
     },
   );
-}
+};
