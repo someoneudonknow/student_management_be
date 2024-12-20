@@ -10,7 +10,10 @@ class TeacherService {
   };
 
   static getTeachers = async ({ page, limit }) => {
-    return await TeacherRepository.getAllTeachers({ page, limit });
+    return await TeacherRepository.getAllTeachersWithJoinAll({
+      page: parseInt(page),
+      limit: parseInt(limit),
+    });
   };
 
   static createTeacher = async (payload) => {
@@ -71,7 +74,7 @@ class TeacherService {
     return deletedResult;
   };
 
-  static filterTeachers = async ({ query }) => { };
+  static filterTeachers = async ({ query }) => {};
 }
 
 module.exports = TeacherService;

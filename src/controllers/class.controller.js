@@ -2,6 +2,13 @@ const ClassService = require("../services/class.service");
 const { SuccessResponse } = require("../cores/success.response");
 
 class ClassController {
+  static getStudentInClass = async (req, res, next) => {
+    return new SuccessResponse({
+      message: "Get students success",
+      metadata: await ClassService.getStudentInClass({ classId: req.params.classId }),
+    }).send(res);
+  }
+
   static createClass = async (req, res, next) => {
     return new SuccessResponse({
       message: "Create class success",
@@ -19,7 +26,7 @@ class ClassController {
   static getClasses = async (req, res, next) => {
     return new SuccessResponse({
       message: "Get classes success",
-      metadata: await ClassService.getClasses(req?.query),
+      metadata: await ClassService.getClasses(),
     }).send(res);
   };
 

@@ -7,6 +7,7 @@ const routes = express.Router();
 
 routes.use(authentication);
 routes.get("/", asyncHandler(ClassController.getClasses));
+routes.get("/:classId/students", asyncHandler(ClassController.getStudentInClass));
 routes.get("/:classId", asyncHandler(ClassController.getClass));
 routes.post("/", asyncHandler(ClassController.createClass));
 routes.patch("/:classId/teachers/:teacherId", asyncHandler(ClassController.updateClassManager));

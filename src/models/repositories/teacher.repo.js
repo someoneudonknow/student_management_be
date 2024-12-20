@@ -1,4 +1,4 @@
-const { where } = require("sequelize");
+const { where, BelongsTo } = require("sequelize");
 const DB = require("../../db/mysql.init");
 const { BadRequestError } = require("../../cores/error.response");
 
@@ -30,6 +30,30 @@ class TeacherRepository {
     });
 
     return { page: pageNum, totalPages: Math.ceil(data.count / limit), list: data?.rows };
+  };
+
+  static getAllTeachersWithJoinAll = async ({ page = 1, limit = 10 }) => {
+    const skip = (page - 1) * limit;
+
+    const data = await DB.Teacher.findAndCountAll({
+      include: [
+        {
+          model: DB.Subject,
+          as: "address",
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          association: new BelongsTo(DB.Teacher, DB.Subject, {
+            targetKey: "id",
+            foreignKey: "subject",
+          }),
+        },
+      ],
+      offset: skip,
+      limit,
+    });
+
+    return { totalPages: parseInt(data.count / limit), page, list: data?.rows };
   };
 
   static createTeacher = async (payload, options) => {

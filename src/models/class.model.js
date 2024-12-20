@@ -22,12 +22,7 @@ module.exports = (sequelize, Sequelize) => {
       },
       size: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        validate: {
-          sizeValidate: function (value) {
-            if (value < 1) throw new Error("Size of class must more than 1");
-          },
-        },
+        defaultValue: 0,
       },
       grade: {
         type: DataTypes.ENUM("10", "11", "12"),
@@ -35,7 +30,17 @@ module.exports = (sequelize, Sequelize) => {
       },
       class_manager: {
         type: DataTypes.UUID,
-        unique: true,
+        references: {
+          model: "teachers",
+          key: "id",
+        },
+      },
+      class_leader: {
+        type: DataTypes.UUID,
+        references: {
+          model: "students",
+          key: "id",
+        },
       },
     },
     { tableName: TABLE_NAME },

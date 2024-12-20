@@ -8,7 +8,7 @@ const SCHEMA_RULE_IDS = [STU_MODEL_ID, CLASS_MODEL_ID];
 
 class RuleService {
     static createRule = async (body) => {
-        const schemaRuleId = body.schema_rule_id;
+        const schemaRuleId = body.schema_rule;
 
         const foundSchema = await RuleRepository.getSchemaRuleById(schemaRuleId);
         if (!foundSchema) throw new BadRequestError("Schema rule is not exists");
@@ -37,7 +37,7 @@ class RuleService {
         const foundSchemaRule = await RuleRepository.getSchemaRuleBySchemaId(schemaId);
         if (foundSchemaRule) throw new ConflictError("Schema rule already exists for this schema id");
 
-        return await RuleRepository.createSchemaRule({ ...body, fields });
+        return await RuleRepository.createSchemaRule({ ...body });
     };
 
     static deleteSchemaRule = async ({ id }) => {

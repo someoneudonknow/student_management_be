@@ -19,10 +19,9 @@ class RuleRepository {
 
   static getAllRulesBySchemaRuleId = async ({ schemaRuleId }) => {
     if (!schemaRuleId) throw new InternalServerError("Something went wrong.")
-
     return await DB.Rule.findAll({
       where: {
-        schema_rule_id: schemaRuleId
+        schema_rule: schemaRuleId
       }
     })
   }

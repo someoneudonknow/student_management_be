@@ -6,6 +6,8 @@ const { deepCleanObject, pickDataInfoExcept } = require("../utils");
 const sequelize = require("sequelize");
 const { Op } = require("sequelize");
 const parseOData = require("odata-sequelize");
+const RuleValidator = require("../helpers/RulesValidate/RulesValidator");
+const { STU_MODEL_ID, CLASS_MODEL_ID } = require("../constants/schemaId");
 
 const classRoles = {
   STUDENT: "student",
@@ -13,16 +15,15 @@ const classRoles = {
 };
 
 class StudentService {
-  static createStudent = async ({
-    first_name,
-    last_name,
-    email,
-    gender,
-    birthday,
-    country,
-    admission_day,
-    address,
-  }) => {
+  static createStudent = async (payload) => {
+    let errors;
+    if ((errors = await RuleValidator.validate(STU_MODEL_ID, payload))) {
+      throw new BadRequestError(errors[0]);
+    }
+
+    const { first_name, last_name, email, gender, birthday, country, admission_day, address } =
+      payload;
+
     const newStudentAddress = await AddressRepository.createAddress(address);
     if (!newStudentAddress) throw new InternalServerError("Something went wrong");
 
@@ -65,6 +66,7 @@ class StudentService {
     if (!foundStudent) throw new BadRequestError("Student not found");
 
     const address = update?.address;
+    const class_role = update?.class_role;
     let updatedOrNewAddress = null;
 
     if (address) {
@@ -128,7 +130,10 @@ class StudentService {
     return await StudentRepository.search({ payload: text });
   };
 
-  static updateStudentClass = async ({ userIds, classId }) => {
+  /**
+   * @deprecated This method shouldn't been used in anywhere
+   * */
+  static updateStudentClass_DEPRECATED = async ({ userIds, classId }) => {
     const foundStudents = await StudentRepository.getStudentsByIds(userIds);
 
     if (!foundStudents || foundStudents.length !== userIds.length)
@@ -139,6 +144,52 @@ class StudentService {
     if (!foundClass) throw new BadRequestError("Class not found");
 
     return await StudentRepository.updateStudentClass({ userIds, classId });
+  };
+
+  static updateStudentClass = async ({ userIds, classId }) => {
+    const foundStudents = await StudentRepository.getStudentsByIds(userIds);
+
+    if (!foundStudents || foundStudents.length !== userIds.length)
+      throw new BadRequestError("Students not found");
+
+    const foundClass = await ClassRepository.getClass(classId);
+    if (!foundClass) throw new BadRequestError("Class not found");
+
+    const foundClassObj = foundClass.toJSON();
+    let addedStudent = 0;
+
+    for (const id of userIds) {
+      const foundStudent = await StudentRepository.getStudent(id);
+      if (!foundStudent) throw new BadRequestError("Student not found");
+
+      if (foundStudent.class && foundStudent.class === classId) {
+        continue;
+      }
+
+      let errors;
+      if ((errors = await RuleValidator.validate(CLASS_MODEL_ID, foundClassObj))) {
+        throw new BadRequestError(
+          `${errors[0]}. Số lượng học sinh đã thêm vào lớp mới: ${addedStudent}` ||
+            "Chạm giới hạn điều kiện",
+        );
+      }
+
+      if (foundStudent.class && foundStudent.class !== classId) {
+        await ClassRepository.decreaseClassSize(foundStudent.class);
+      }
+
+      foundStudent.class = classId;
+      await ClassRepository.increaseClassSize(classId);
+
+      foundClassObj.size++;
+      await foundStudent.save();
+
+      addedStudent++;
+    }
+
+    return {
+      addedStudent,
+    };
   };
 }
 

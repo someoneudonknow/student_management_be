@@ -33,11 +33,22 @@ class StudentRepository {
           model: DB.Address,
           as: "address",
           attributes: {
-            exclude: ["createdAt", "updatedAt"],
+            exclude: ["createdAt", "updatedAt", "address", "class"],
           },
           association: new BelongsTo(DB.Student, DB.Address, {
             targetKey: "id",
             foreignKey: "address",
+          }),
+        },
+        {
+          model: DB.Class,
+          as: "class",
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          association: new BelongsTo(DB.Student, DB.Class, {
+            targetKey: "id",
+            foreignKey: "class",
           }),
         },
       ],
@@ -55,7 +66,7 @@ class StudentRepository {
     const data = await DB.Student.findAndCountAll({
       order: [["createdAt", "DESC"]],
       attributes: {
-        exclude: ["address", "createdAt", "updatedAt"],
+        exclude: ["address", "createdAt", "updatedAt", "class"],
       },
       include: [
         {
@@ -69,10 +80,22 @@ class StudentRepository {
             foreignKey: "address",
           }),
         },
+        {
+          model: DB.Class,
+          as: "classes",
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          association: new BelongsTo(DB.Student, DB.Class, {
+            targetKey: "id",
+            foreignKey: "class",
+          }),
+        },
       ],
       limit: limitNum,
       offset: skip,
     });
+    console.log(data);
 
     return { page: pageNum, totalPages: Math.ceil(data.count / limit), list: data?.rows };
   }
@@ -85,36 +108,6 @@ class StudentRepository {
         },
       },
     });
-  }
-
-  static async getStudentsWithAddresses({ page, limit }) {
-    const pageNum = parseInt(page);
-    const limitNum = parseInt(limit);
-    const skip = (pageNum - 1) * limitNum;
-
-    const data = await DB.Student.findAndCountAll({
-      order: [["createdAt", "DESC"]],
-      attributes: {
-        exclude: ["address", "createdAt", "updatedAt"],
-      },
-      include: [
-        {
-          model: DB.Address,
-          as: "address",
-          attributes: {
-            exclude: ["createdAt", "updatedAt"],
-          },
-          association: new BelongsTo(DB.Student, DB.Address, {
-            targetKey: "id",
-            foreignKey: "address",
-          }),
-        },
-      ],
-      limit: limitNum,
-      offset: skip,
-    });
-
-    return { page: pageNum, totalPages: Math.ceil(data.count / limit), list: data?.rows };
   }
 
   static async updateStudent(id, payload) {

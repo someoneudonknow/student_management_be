@@ -19,6 +19,9 @@ module.exports = (sequelize, Sequelize) => {
       name: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: {
+          msg: "Đã tồn tại môn học với tên này",
+        },
       },
       number_of_period: {
         type: DataTypes.INTEGER,

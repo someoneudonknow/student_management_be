@@ -58,11 +58,11 @@ module.exports = (sequelize, Sequelize) => {
           },
         },
       },
-      class_role: {
-        type: DataTypes.ENUM("leader", "student"),
-        allowNull: false,
-        defaultValue: "student",
-      },
+      //class_role: {
+      //  type: DataTypes.ENUM("leader", "student"),
+      //  allowNull: false,
+      //  defaultValue: "student",
+      //},
       country: {
         type: DataTypes.STRING,
       },

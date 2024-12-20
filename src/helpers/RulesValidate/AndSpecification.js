@@ -2,6 +2,7 @@ const { default: Specification } = require("./Specification");
 
 class AndSpecification extends Specification {
   constructor(...specs) {
+    super();
     this.specs = specs;
   }
 

@@ -1,19 +1,26 @@
 const { BadRequestError } = require("../cores/error.response");
 const ClassRepository = require("../models/repositories/class.repo");
-const { deepCleanObject } = require("../utils");
+const { deepCleanObject, pickDataInfoExcept } = require("../utils");
 const TeacherService = require("./teacher.service");
 
 class ClassService {
+  static getStudentInClass = async ({ classId }) => {
+    const classFound = await ClassRepository.getClass(classId)
+    if (!classFound) throw new BadRequestError("Class not found.")
+
+    return await ClassRepository.getAllStudentsInClass(classId)
+  }
+
   static getClass = async (classId) => {
     return await ClassRepository.getClass(classId);
   };
 
-  static getClasses = async ({ page, limit, ...rest }) => {
-    return await ClassRepository.getClasses({ page, limit, filter: rest });
+  static getClasses = async () => {
+    return await ClassRepository.getAllClasses();
   };
 
   static createClass = async (payload) => {
-    return await ClassRepository.createClass(payload);
+    return await ClassRepository.createClass(pickDataInfoExcept(payload, ["size"]));
   };
 
   static updateClass = async ({ classId, update }) => {
