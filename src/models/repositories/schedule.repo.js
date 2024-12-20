@@ -1,6 +1,7 @@
 const DB = require("../../db/mysql.init");
 const { Op } = require("sequelize");
 const sequelize = require("sequelize");
+const { InternalServerError } = require("../../cores/error.response");
 
 class ScheduleRepository {
   static async createSchedules(schedules) {
@@ -11,17 +12,23 @@ class ScheduleRepository {
     return await DB.Schedule.create(schedule);
   }
 
-  static async getSchedules(options) {
+  static async getSchedules(filter = {}, options) {
     return await DB.Schedule.findAll({
+      where: filter,
       attributes: [
         "id",
         "day",
-        "class_id",
+        "class",
         "section_order",
         "subject",
+        "teacher",
         [
-          sequelize.literal("(SELECT name FROM Subjects WHERE Subjects.id = Schedule.subject)"),
+          sequelize.literal("(SELECT name FROM subjects WHERE subjects.id = schedule.subject)"),
           "name",
+        ],
+        [
+          sequelize.literal("(SELECT name FROM classes WHERE classes.id = schedule.class)"),
+          "class_name",
         ],
       ],
       order: [
@@ -33,18 +40,21 @@ class ScheduleRepository {
         ],
         ["section_order", "ASC"],
       ],
-      raw: true,
+      ...options,
     });
   }
 
   static async getSchedule({ day, sectionOrder }) {
-    return await DB.Schedule.findOne({ where: { day, sectionOrder } }, { raw: true });
+    return await DB.Schedule.findOne(
+      { where: { day, section_order: sectionOrder } },
+      { raw: true },
+    );
   }
 
-  static async getSchedulePerClass(classId, options) {
+  static async getSchedulePerClass(classId, filter = {}, options) {
     return await DB.Schedule.findAll(
       {
-        where: { class_id: classId },
+        where: { class: classId, ...filter },
         order: [
           [
             sequelize.literal(
@@ -59,19 +69,22 @@ class ScheduleRepository {
     );
   }
 
-  static async getScheduleExcludeClass(classId) {
-    return await DB.Schedule.findAll(
-      {
-        where: {
-          class_id: { [Op.ne]: classId },
-        },
-        order: [
-          [sequelize.literal("(DAYOFWEEK(day) - 2) % 6"), "ASC"],
-          ["section_order", "ASC"],
-        ],
+  static async getScheduleExcludeClass(classId, filter = {}) {
+    return await DB.Schedule.findAll({
+      where: {
+        class: { [Op.ne]: classId },
+        ...filter,
       },
-      { raw: true },
-    );
+      order: [
+        [sequelize.literal("(DAYOFWEEK(day) - 2) % 6"), "ASC"],
+        ["section_order", "ASC"],
+      ],
+      raw: true,
+    });
+  }
+
+  static async update(values, filters) {
+    await DB.Schedule.update(values, { where: filters });
   }
 
   static async deleteSchedule(day, classId, sectionOrder) {
@@ -79,7 +92,7 @@ class ScheduleRepository {
       where: {
         day,
         section_order: sectionOrder,
-        class_id: classId,
+        class: classId,
       },
     });
   }
