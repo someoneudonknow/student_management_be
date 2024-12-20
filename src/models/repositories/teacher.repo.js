@@ -1,6 +1,7 @@
 const { where, BelongsTo } = require("sequelize");
 const DB = require("../../db/mysql.init");
 const { BadRequestError } = require("../../cores/error.response");
+const { raw } = require("express");
 
 class TeacherRepository {
   static getTeacher = async (teacherId) => {
@@ -27,6 +28,7 @@ class TeacherRepository {
     const data = await DB.Teacher.findAndCountAll({
       offset,
       limit: limitNum,
+      raw: true,
     });
 
     return { page: pageNum, totalPages: Math.ceil(data.count / limit), list: data?.rows };
