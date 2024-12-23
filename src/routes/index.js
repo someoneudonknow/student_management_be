@@ -13,5 +13,6 @@ appRoutes.use("/v1/api/schema-rules", require("./schemaRule"))
 appRoutes.use("/v1/api/scores", require("./score"));
 appRoutes.use("/v1/api/schedules", require("./schedule"));
 appRoutes.use("/v1/api/subjects", require("./subject"));
+appRoutes.use("/v1/api/stats", require("./stats"));
 
 module.exports = appRoutes;

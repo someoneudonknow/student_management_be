@@ -17,12 +17,18 @@ class ClassRepository {
     return await DB.Class.findByPk(classId, options);
   };
 
-  static getAllClasses = async () => {
-    const result = await DB.Class.findAll({
-      attributes: {
-        exclude: ["createdAt", "updatedAt"]
+  static getClassWithJoin = async (classId) => {
+    let classFound = await DB.Class.findOne({
+      where: {
+        id: classId,
       },
-      order: [["grade", "ASC"], ["name", "ASC"]],
+      attributes: {
+        exclude: ["createdAt", "updatedAt"],
+      },
+      order: [
+        ["grade", "ASC"],
+        ["name", "ASC"],
+      ],
       include: [
         {
           model: DB.Teacher,
@@ -45,12 +51,65 @@ class ClassRepository {
             targetKey: "id",
             foreignKey: "class_leader",
           }),
-        }
+        },
       ],
-    })
+    });
 
-    return result.map(r => pickDataInfoExcept(r.toJSON()
-      , ["Teacher", "Student"]));
+    classFound = classFound?.toJSON();
+
+    classFound.class_manager = classFound?.Teacher;
+    classFound.class_leader = classFound?.Student;
+
+    delete classFound.Teacher;
+    delete classFound.Student;
+
+    return classFound;
+  };
+
+  static getAllClasses = async () => {
+    const result = await DB.Class.findAll({
+      attributes: {
+        exclude: ["createdAt", "updatedAt"],
+      },
+      order: [
+        ["grade", "ASC"],
+        ["name", "ASC"],
+      ],
+      include: [
+        {
+          model: DB.Teacher,
+          as: "class_manager",
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          association: new BelongsTo(DB.Class, DB.Teacher, {
+            targetKey: "id",
+            foreignKey: "class_manager",
+          }),
+        },
+        {
+          model: DB.Student,
+          as: "class_leader",
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          association: new BelongsTo(DB.Class, DB.Student, {
+            targetKey: "id",
+            foreignKey: "class_leader",
+          }),
+        },
+      ],
+    });
+
+    const classes = result.map((r) => {
+      return {
+        ...r.toJSON(),
+        class_manager: r?.Teacher?.toJSON(),
+        class_leader: r?.Student?.toJSON(),
+      };
+    });
+
+    return classes.map((c) => pickDataInfoExcept(c, ["", ""]));
   };
 
   static getAllStudentsInClass = async (classId) => {
@@ -69,11 +128,10 @@ class ClassRepository {
             targetKey: "id",
             foreignKey: "address",
           }),
-        }
-
-      ]
-    })
-  }
+        },
+      ],
+    });
+  };
 
   static getClasses = async ({ page = 1, limit = 10, filter }) => {
     const offset = (page - 1) * limit;

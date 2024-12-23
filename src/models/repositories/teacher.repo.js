@@ -34,6 +34,34 @@ class TeacherRepository {
     return { page: pageNum, totalPages: Math.ceil(data.count / limit), list: data?.rows };
   };
 
+  static filterTeachersWithJoinAll = async (filters) => {
+    if (!filters.limit) filters.limit = 25;
+    if (!filters.offset) filters.offset = 0;
+
+    const data = await DB.Teacher.findAndCountAll({
+      include: [
+        {
+          model: DB.Subject,
+          as: "address",
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          association: new BelongsTo(DB.Teacher, DB.Subject, {
+            targetKey: "id",
+            foreignKey: "subject",
+          }),
+        },
+      ],
+      ...filters,
+    });
+
+    return {
+      totalPages: parseInt(data.count / filters.limit),
+      page: filters.offset / filters.limit + 1,
+      list: data?.rows,
+    };
+  };
+
   static getAllTeachersWithJoinAll = async ({ page = 1, limit = 10 }) => {
     const skip = (page - 1) * limit;
 

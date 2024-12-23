@@ -3,6 +3,8 @@ const { deepCleanObject } = require("../utils");
 const dateValidate = require("../helpers/dateValidate");
 const { BadRequestError } = require("../cores/error.response");
 const { Op } = require("sequelize");
+const parseOData = require("odata-sequelize");
+const sequelize = require("sequelize");
 
 class TeacherService {
   static getTeacher = async (teacherId) => {
@@ -14,6 +16,14 @@ class TeacherService {
       page: parseInt(page),
       limit: parseInt(limit),
     });
+  };
+
+  static filterTeachers = async (plainQuery) => {
+    if (!plainQuery) return await this.getTeachers({ page: 1, limit: 50 });
+
+    const filterObj = parseOData(decodeURIComponent(plainQuery), sequelize);
+
+    return await TeacherRepository.filterTeachersWithJoinAll(filterObj);
   };
 
   static createTeacher = async (payload) => {
@@ -73,8 +83,6 @@ class TeacherService {
 
     return deletedResult;
   };
-
-  static filterTeachers = async ({ query }) => {};
 }
 
 module.exports = TeacherService;

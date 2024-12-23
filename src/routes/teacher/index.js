@@ -9,6 +9,7 @@ const routes = express.Router();
 routes.use(authentication);
 routes.use(restrictTo(["admin"]));
 
+routes.get("/filters", asyncHandler(TeacherController.filterTeachers));
 routes.get("/:teacherId", asyncHandler(TeacherController.getTeacher));
 routes.get("/", asyncHandler(TeacherController.getTeachers));
 routes.post("/", asyncHandler(TeacherController.createTeacher));
