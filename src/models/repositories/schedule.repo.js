@@ -1,7 +1,6 @@
 const DB = require("../../db/mysql.init");
 const { Op } = require("sequelize");
 const sequelize = require("sequelize");
-const { InternalServerError } = require("../../cores/error.response");
 
 class ScheduleRepository {
   static async createSchedules(schedules) {

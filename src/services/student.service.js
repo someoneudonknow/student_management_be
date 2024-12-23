@@ -57,6 +57,10 @@ class StudentService {
     return await StudentRepository.getStudentWithAddressesAndFilter(filterObj);
   };
 
+  static getStudents = async (filter) => {
+    return await StudentRepository.getStudents({ page: 1, limit: 100, filter });
+  };
+
   static getAllStudents = async ({ page = 1, limit = 10 }) => {
     return await StudentRepository.getStudentsWithAddresses({ page, limit });
   };
