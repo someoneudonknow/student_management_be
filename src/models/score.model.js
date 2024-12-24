@@ -85,6 +85,36 @@ module.exports = (sequelize, Sequelize) => {
     },
     {
       tableName: TABLE_NAME,
+      hooks: {
+        beforeUpdate: async function (model) {
+          console.log("model: ", model.quarter_point_1);
+          const scoreFields = [
+            "quarter_point_1",
+            "quarter_point_2",
+            "period_point",
+            "final_exam_point",
+          ];
+
+          for (let field of scoreFields) {
+            if (isNaN(model[field]) || model[field] < 0 || model[field] > 10) {
+              return;
+            } else {
+              const calcAVGPoint =
+                (model["final_exam_point"] * 3 +
+                  model["period_point"] * 2 +
+                  model["quarter_point_1"] +
+                  model["quarter_point_1"]) /
+                7;
+
+              console.log("point: ", calcAVGPoint);
+
+              model.AVG_point = Math.round(calcAVGPoint * 100) / 100;
+            }
+
+            console.log(model);
+          }
+        },
+      },
     },
   );
 };
