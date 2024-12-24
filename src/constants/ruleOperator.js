@@ -1,0 +1,6 @@
+export const EQUALS = "="
+export const NOT_EQUALS = "!="
+export const GREATER_THAN = ">="
+export const GREATER_THAN_OR_EQUALS = ">="
+export const LOWER_THAN = "<"
+export const LOWER_THAN_OR_EQUALS = "<="

@@ -1,0 +1,88 @@
+const TeacherRepository = require("../models/repositories/teacher.repo");
+const { deepCleanObject } = require("../utils");
+const dateValidate = require("../helpers/dateValidate");
+const { BadRequestError } = require("../cores/error.response");
+const { Op } = require("sequelize");
+const parseOData = require("odata-sequelize");
+const sequelize = require("sequelize");
+
+class TeacherService {
+  static getTeacher = async (teacherId) => {
+    return await TeacherRepository.getTeacher(teacherId);
+  };
+
+  static getTeachers = async ({ page, limit }) => {
+    return await TeacherRepository.getAllTeachersWithJoinAll({
+      page: parseInt(page),
+      limit: parseInt(limit),
+    });
+  };
+
+  static filterTeachers = async (plainQuery) => {
+    if (!plainQuery) return await this.getTeachers({ page: 1, limit: 50 });
+
+    const filterObj = parseOData(decodeURIComponent(plainQuery), sequelize);
+
+    return await TeacherRepository.filterTeachersWithJoinAll(filterObj);
+  };
+
+  static createTeacher = async (payload) => {
+    const hasFirstDayOfWork = payload.hasOwnProperty("first_day_of_work");
+
+    if (hasFirstDayOfWork) {
+      const firstDayOfWordValidate = dateValidate(
+        payload["birthday"],
+        payload["first_day_of_work"],
+        18,
+        40,
+      );
+      if (!firstDayOfWordValidate) throw new BadRequestError("Invalid date");
+    }
+
+    const hasBirthday = payload.hasOwnProperty("birthday");
+
+    if (hasBirthday) {
+      const ageValidate = dateValidate(payload["birthday"], new Date(), 18, 65);
+      if (!ageValidate) throw new BadRequestError("Age must be in range [18, 65]");
+    }
+
+    return await TeacherRepository.createTeacher(payload);
+  };
+
+  static updateTeacher = async ({ teacherId, payload }) => {
+    const hasUpdateBirthday = payload.hasOwnProperty("birthday");
+
+    if (hasUpdateBirthday) {
+      const ageValidate = dateValidate(payload["birthday"], new Date(), 18, 65);
+      if (!ageValidate) throw new BadRequestError("Age must be in range [18, 65]");
+    }
+
+    const protectFields = ["id"];
+    for (const field of protectFields) {
+      delete payload[field];
+    }
+    const update = deepCleanObject(payload);
+
+    return await TeacherRepository.updateTeacher(teacherId, update);
+  };
+
+  static deleteTeacher = async (teacherId) => {
+    return await TeacherRepository.deleteTeacher(teacherId);
+  };
+
+  static batchDeleteTeachers = async (ids) => {
+    if (ids.length > 100) throw new BadRequestError("Delete limit exceeded");
+
+    const deletedResult = await TeacherRepository.deleteWithFilter({
+      where: {
+        id: {
+          [Op.in]: ids,
+        },
+      },
+    });
+
+    return deletedResult;
+  };
+}
+
+module.exports = TeacherService;

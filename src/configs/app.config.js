@@ -3,7 +3,9 @@ const configs = {
     app: {
       host: process.env.APP_HOST_DEV ?? "localhost",
       port: process.env.APP_PORT_DEV ?? 3054,
+      pepper: process.env.APP_PEPPER_DEV
     },
+    clientUrl: process.env.CLIENT_URL_DEV ?? "",
     db: {
       host: process.env.DB_HOST_DEV ?? "",
       port: process.env.DB_PORT_DEV ?? 3306,
@@ -12,17 +14,50 @@ const configs = {
       name: process.env.DB_NAME_DEV ?? "student_management_dev",
     },
     redis: {
-      host: process.env.REDIS_HOST_DEV ?? "",
-      port: process.env.REDIS_PORT_DEV ?? "",
-      user: process.env.REDIS_USER_DEV ?? "",
-      pass: process.env.REDIS_PASS_DEV ?? ""
+      host: process.env.REDIS_HOST_DEV ?? "localhost",
+      port: process.env.REDIS_PORT_DEV ?? "6379",
+    },
+    mail: {
+      service: process.env.MAIL_SERVICE_DEV ?? "",
+      user: process.env.MAIL_USER_DEV ?? "",
+      pass: process.env.MAIL_PASS_DEV ?? "",
+      host: process.env.MAIL_HOST_DEV ?? "",
+      port: process.env.MAIL_PORT_DEV ?? ""
+    }
+  },
+  test: {
+    app: {
+      host: process.env.APP_HOST_TEST ?? "localhost",
+      port: process.env.APP_PORT_TEST ?? 3054,
+      pepper: process.env.APP_PEPPER_TEST
+    },
+    clientUrl: process.env.CLIENT_URL_TEST ?? "",
+    db: {
+      host: process.env.DB_HOST_TEST ?? "",
+      port: process.env.DB_PORT_TEST ?? 3306,
+      pass: process.env.DB_PASS_TEST ?? "root",
+      user: process.env.DB_USER_TEST ?? "root",
+      name: process.env.DB_NAME_TEST ?? "student_management_test",
+    },
+    redis: {
+      host: process.env.REDIS_HOST_TEST ?? "localhost",
+      port: process.env.REDIS_PORT_TEST ?? "6379",
+    },
+    mail: {
+      service: process.env.MAIL_SERVICE_TEST ?? "",
+      user: process.env.MAIL_USER_TEST ?? "",
+      pass: process.env.MAIL_PASS_TEST ?? "",
+      host: process.env.MAIL_HOST_TEST ?? "",
+      port: process.env.MAIL_PORT_TEST ?? ""
     }
   },
   production: {
     app: {
       host: process.env.APP_HOST_PROD ?? "localhost",
       port: process.env.APP_PORT_PROD ?? 3056,
+      pepper: process.env.APP_PEPPER_PROD
     },
+    clientUrl: process.env.CLIENT_URL_PROD ?? "",
     db: {
       host: process.env.DB_HOST_PROD ?? "",
       port: process.env.DB_PORT_PROD ?? 3306,
@@ -30,6 +65,17 @@ const configs = {
       user: process.env.DB_USER_PROD ?? "root",
       name: process.env.DB_NAME_PROD ?? "student_management_prod",
     },
+    redis: {
+      host: process.env.REDIS_HOST_PROD ?? "localhost",
+      port: process.env.REDIS_PORT_PROD ?? "6379",
+    },
+    mail: {
+      service: process.env.MAIL_SERVICE_PROD ?? "",
+      user: process.env.MAIL_USER_PROD ?? "",
+      pass: process.env.MAIL_PASS_PROD ?? "",
+      host: process.env.MAIL_HOST_PROD ?? "",
+      port: process.env.MAIL_PORT_PROD ?? ""
+    }
   }
 };
 

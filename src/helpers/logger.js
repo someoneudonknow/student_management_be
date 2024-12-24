@@ -19,7 +19,7 @@ const logger = (type, text) => {
   const availableTypes = ["success", "error", "warn", "info"]
 
   if (!availableTypes.includes(type)) {
-    throw new error(`Type ${type} is not a valid type`)
+    throw new Error(`Type ${type} is not a valid type`)
   }
 
   const logContent = `${prefix[type]}${text}`

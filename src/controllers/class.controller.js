@@ -1,0 +1,58 @@
+const ClassService = require("../services/class.service");
+const { SuccessResponse } = require("../cores/success.response");
+
+class ClassController {
+  static getStudentInClass = async (req, res, next) => {
+    return new SuccessResponse({
+      message: "Get students success",
+      metadata: await ClassService.getStudentInClass({ classId: req.params.classId }),
+    }).send(res);
+  }
+
+  static createClass = async (req, res, next) => {
+    return new SuccessResponse({
+      message: "Create class success",
+      metadata: await ClassService.createClass(req.body),
+    }).send(res);
+  };
+
+  static getClass = async (req, res, next) => {
+    return new SuccessResponse({
+      message: "Get class success",
+      metadata: await ClassService.getClass(req.params.classId),
+    }).send(res);
+  };
+
+  static getClasses = async (req, res, next) => {
+    return new SuccessResponse({
+      message: "Get classes success",
+      metadata: await ClassService.getClasses(),
+    }).send(res);
+  };
+
+  static updateClass = async (req, res, next) => {
+    return new SuccessResponse({
+      message: "Update class success",
+      metadata: await ClassService.updateClass({ classId: req.params.classId, update: req.body }),
+    }).send(res);
+  };
+
+  static deleteClass = async (req, res, next) => {
+    return new SuccessResponse({
+      message: "Delete class success",
+      metadata: await ClassService.deleteClass(req.params.classId),
+    }).send(res);
+  };
+
+  static updateClassManager = async (req, res, next) => {
+    return new SuccessResponse({
+      message: "Update class manager success",
+      metadata: await ClassService.updateClassManager({
+        teacherId: req.params.teacherId,
+        classId: req.params.classId,
+      }),
+    }).send(res);
+  };
+}
+
+module.exports = ClassController;
