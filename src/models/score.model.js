@@ -86,8 +86,8 @@ module.exports = (sequelize, Sequelize) => {
     {
       tableName: TABLE_NAME,
       hooks: {
-        beforeUpdate: async function (model) {
-          console.log("model: ", model.quarter_point_1);
+        beforeUpdate: function (model) {
+          console.log("model: ", model);
           const scoreFields = [
             "quarter_point_1",
             "quarter_point_2",
@@ -111,7 +111,7 @@ module.exports = (sequelize, Sequelize) => {
               model.AVG_point = Math.round(calcAVGPoint * 100) / 100;
             }
 
-            console.log(model);
+            console.log("model: ", model);
           }
         },
       },

@@ -49,6 +49,8 @@ class ScheduleService {
   static async getSubjectSchedules() {
     const schedules = await ScheduleRepository.getSchedules({ teacher: null }, { raw: true });
 
+    if (schedules.length === 0) return null;
+
     const scheduleResult = schedules.reduce((result, value) => {
       if (!result[value.subject]) {
         result[value.subject] = {};
@@ -163,9 +165,9 @@ class ScheduleService {
             if (otherSubjectSchedules.length > 0) {
               for (let oldSubjectSchedule of oldSubjectSchedules) {
                 for (let otherSubjectSchedule of otherSubjectSchedules) {
-                  console.log(oldSubjectSchedule);
-                  console.log(otherSubjectSchedule);
-                  console.log("------------------------");
+                  // console.log(oldSubjectSchedule);
+                  // console.log(otherSubjectSchedule);
+                  // console.log("------------------------");
                   if (
                     oldSubjectSchedule.day === otherSubjectSchedule.day &&
                     oldSubjectSchedule.section_order === otherSubjectSchedule.section_order
@@ -262,9 +264,11 @@ class ScheduleService {
 
     //Get schedule depend on struct {subject: {class: [...]}}
     const schedules = await this.getSubjectSchedules();
+
+    if (!schedules) return await this.getTeacherSchedules();
+
     const teacherSchedules = {};
 
-    //-----
     for (let subject in schedules) {
       for (let curClass in schedules[subject]) {
         let isAssign = false;
@@ -319,7 +323,7 @@ class ScheduleService {
       }
     }
 
-    return schedules;
+    return await this.getTeacherSchedules();
   }
 }
 

@@ -19,6 +19,7 @@ class StudentRepository {
       where: filter,
       limit: limitNum,
       offset: skip,
+      raw: true,
     });
 
     return { page: pageNum, totalPages: Math.ceil(data.count / limit), list: data?.rows };
