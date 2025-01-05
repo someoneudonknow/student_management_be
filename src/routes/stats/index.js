@@ -12,5 +12,6 @@ router.get("/scores", asyncHandler(statsController.getScoreStats));
 router.get("/current-semester", asyncHandler(statsController.getCurrentSemesterStats));
 router.get("/regression", asyncHandler(statsController.getRegressionData));
 router.get("/subject-pass-rates", asyncHandler(statsController.getSubjectPassRates));
+router.get("/available-years", asyncHandler(statsController.getAvailableYears));
 
 module.exports = router;

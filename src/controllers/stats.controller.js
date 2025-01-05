@@ -2,6 +2,12 @@ const { SuccessResponse } = require("../cores/success.response");
 const StatsService = require("../services/stats.service");
 
 class StatsController {
+  getAvailableYears = async (req, res, next) => {
+    new SuccessResponse({
+      message: "Get available years successfully",
+      metadata: await StatsService.getAvailableYears(),
+    }).send(res);
+  };
   getStudentStats = async (req, res, next) => {
     new SuccessResponse({
       message: "Get student stats successfully",
