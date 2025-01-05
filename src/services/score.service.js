@@ -21,41 +21,71 @@ class ScoreService {
     const foundSubject = await SubjectRepository.getSubject(subjectId);
     if (!foundSubject) throw new BadRequestError("Không tìm thấy môn học");
 
-    const result = await ScoreRepository.getScoreOfClass(classId, subjectId, semester);
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+
+    const schoolYearStart = currentMonth > 6 ? currentYear : currentYear - 1;
+
+    let result = await ScoreRepository.getScoreOfClass(
+      classId,
+      subjectId,
+      semester,
+      schoolYearStart,
+    );
 
     if (result.length === 0) {
       //create score for student of class
       const foundStudents = await StudentService.getStudents({ class: classId });
 
       if (!foundStudents.list.length === 0) throw new BadRequestError("Lớp chưa có học sinh nào");
-      const currentYear = new Date().getFullYear();
 
       for (let student of foundStudents.list) {
-        switch (semester) {
-          case "I":
-            await this.createScore({
-              student: student.id,
-              subject: subjectId,
-              semester,
-              school_year_start: currentYear,
-              school_year_end: currentYear + 1,
-            });
-            break;
-          case "II":
-            await this.createScore({
-              student: student.id,
-              subject: subjectId,
-              semester,
-              school_year_start: currentYear - 1,
-              school_year_end: currentYear,
-            });
-            break;
-          default:
-            throw new BadRequestError("Học kỳ không hợp lệ");
+        // switch (semester) {
+        //   case "I":
+        //     await this.createScore({
+        //       student: student.id,
+        //       subject: subjectId,
+        //       semester,
+        //       school_year_start: currentYear,
+        //       school_year_end: currentYear + 1,
+        //     });
+        //     break;
+        //   case "II":
+        //     const s = await this.createScore({
+        //       student: student.id,
+        //       subject: subjectId,
+        //       semester,
+        //       school_year_start: currentYear - 1,
+        //       school_year_end: currentYear,
+        //     });
+
+        //     console.log(s);
+        //     break;
+        //   default:
+        //     throw new BadRequestError("Học kỳ không hợp lệ");
+        // }
+
+        if (currentMonth > 6) {
+          await this.createScore({
+            student: student.id,
+            subject: subjectId,
+            semester,
+            school_year_start: currentYear,
+            school_year_end: currentYear + 1,
+          });
+        } else {
+          await this.createScore({
+            student: student.id,
+            subject: subjectId,
+            semester,
+            school_year_start: currentYear - 1,
+            school_year_end: currentYear,
+          });
         }
       }
-      return await ScoreRepository.getScoreOfClass(classId, subjectId, semester);
+      result = await ScoreRepository.getScoreOfClass(classId, subjectId, semester, schoolYearStart);
     }
+
     return result;
   }
 
@@ -68,7 +98,18 @@ class ScoreService {
 
     if (!foundScore) throw new BadRequestError("Score does not exist");
 
-    return await ScoreRepository.updateScore(studentId, subjectId, semester, payload);
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+
+    const schoolYearStart = currentMonth > 6 ? currentYear : currentYear - 1;
+
+    return await ScoreRepository.updateScore(
+      studentId,
+      subjectId,
+      semester,
+      schoolYearStart,
+      payload,
+    );
   }
 
   static async updateScoresOfClass({ classId, subjectId, semester, payloads }) {
@@ -90,7 +131,17 @@ class ScoreService {
 
     if (validPayload.length === 0) throw new BadRequestError("Dữ liệu không khớp");
 
-    return await ScoreRepository.updateScoresOfClass(subjectId, semester, validPayload);
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+
+    const schoolYearStart = currentMonth > 6 ? currentYear : currentYear - 1;
+
+    return await ScoreRepository.updateScoresOfClass(
+      subjectId,
+      semester,
+      schoolYearStart,
+      validPayload,
+    );
   }
 }
 

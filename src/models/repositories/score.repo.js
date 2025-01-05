@@ -1,5 +1,4 @@
 const DB = require("../../db/mysql.init");
-const { BadRequestError } = require("../../cores/error.response");
 const { Op } = require("sequelize");
 const sequelize = require("sequelize");
 
@@ -16,7 +15,7 @@ class ScoreRepository {
     return await DB.Score.findAll({ where: { subject: subjectId } });
   }
 
-  static async getScoreOfClass(classId, subjectId, semester) {
+  static async getScoreOfClass(classId, subjectId, semester, schoolYearStart) {
     return await DB.Score.findAll({
       include: {
         model: DB.Student,
@@ -30,30 +29,22 @@ class ScoreRepository {
       where: {
         subject: subjectId,
         semester,
-        school_year_start: {
-          [Op.eq]: sequelize.literal(`(
-          SELECT MAX(school_year_start) FROM scores
-        )`),
-        },
+        school_year_start: schoolYearStart,
       },
     });
   }
 
-  static async createScore(payload, options) {
-    await DB.Score.create(payload, options);
+  static async createScore(payload, options = {}) {
+    return await DB.Score.create(payload, options);
   }
 
-  static async updateScore(studentId, subjectId, semester, payload) {
+  static async updateScore(studentId, subjectId, semester, schoolYearStart, payload) {
     const foundScore = await DB.Score.findOne({
       where: {
         subject: subjectId,
         student: studentId,
         semester,
-        school_year_start: {
-          [Op.eq]: sequelize.literal(`(
-  SELECT MAX(school_year_start) FROM Scores
-)`),
-        },
+        school_year_start: schoolYearStart,
       },
     });
 
@@ -65,32 +56,36 @@ class ScoreRepository {
     return await foundScore.save();
   }
 
-  static async updateScoresOfClass(subjectId, semester, payloads) {
-    const res = await DB.sequelize.query(
-      "SELECT MAX(school_year_start) as result FROM student_management_dev.scores ORDER BY school_year_start DESC LIMIT 1",
-    );
+  static async updateScoresOfClass(subjectId, semester, schoolYearStart, payloads) {
+    // const result = await DB.sequelize.transaction(async (t) => {
+    console.log("payloads: ", payloads);
 
-    const school_year_start = res[0][0]["result"];
+    for (let payload of payloads) {
+      const { id, ...values } = payload;
 
-    const result = await DB.sequelize.transaction(async (t) => {
-      console.log("payloads: ", payloads);
+      const foundScore = await DB.Score.findOne({
+        where: { student: id, subject: subjectId, semester, school_year_start: schoolYearStart },
+      });
 
-      for (let payload of payloads) {
-        const { id, ...values } = payload;
+      await foundScore.update(values);
 
-        const query = await DB.Score.update(values, {
-          where: {
-            student: id,
-            subject: subjectId,
-            semester,
-            school_year_start,
-          },
-          transaction: t,
-        });
-      }
-    });
+      await foundScore.save();
 
-    return result;
+      // await DB.Score.update(values, {
+      //   where: {
+      //     student: id,
+      //     subject: subjectId,
+      //     semester,
+      //     school_year_start: schoolYearStart,
+      //   },
+      //   transaction: t,
+      //   hooks: true,
+      // });
+    }
+    // });
+
+    // console.log("result: ", result);
+    // return result;
   }
 }
 
